@@ -23,6 +23,14 @@ public class Robot extends IterativeRobot {
 	private static final String kCustomAuto = "My Auto";
 	private String m_autoSelected;
 	private SendableChooser<String> m_chooser = new SendableChooser<>();
+	
+	
+	static NavX navX;
+	static Lift lift;
+	static Climber climber;
+	static Drivebase drivebase;
+	static Intake intake;
+
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -33,6 +41,13 @@ public class Robot extends IterativeRobot {
 		m_chooser.addDefault("Default Auto", kDefaultAuto);
 		m_chooser.addObject("My Auto", kCustomAuto);
 		SmartDashboard.putData("Auto choices", m_chooser);
+		
+		navX = new NavX();
+		lift = new Lift();
+		climber = new Climber();
+		intake = new Intake();
+		drivebase = new Drivebase();
+
 	}
 
 	/**
@@ -75,6 +90,18 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		OI.updateXbox();
+		drivebase.drive(OI.lX, OI.lY);
+		
+		if (OI.lTrigger) {
+			intake.set(0.6);
+		} else {
+			intake.set(0);
+		}
+		
+		intake.setPiston(OI.xBtnA);
+		
+		
 	}
 
 	/**

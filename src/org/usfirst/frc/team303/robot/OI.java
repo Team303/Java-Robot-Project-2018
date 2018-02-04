@@ -3,6 +3,7 @@ package org.usfirst.frc.team303.robot;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Joystick.ButtonType;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.XboxController;
 
@@ -20,7 +21,7 @@ public class OI {
 	
 	static boolean[] lBtn = new boolean[9];
 	static boolean[] rBtn = new boolean[9];	
-	static boolean xBtnA, xBtnB, xBtnX, xBtnY, xLeftBumper, xRightBumper, xBtnStart, xBtnBack, xLeftStickBtn, xRightStickBtn;
+	static boolean xBtnA, xBtnB, xBtnX, xBtnY, xLeftBumper, xRightBumper, xBtnStart, xBtnBack, xLeftStickBtn, xRightStickBtn, lTrigger, rTrigger;
 	
 	public static void update() {
 		
@@ -38,7 +39,7 @@ public class OI {
 	public static void outputs() {
 		
 		if(RobotState.isOperatorControl() && RobotState.isAutonomous()) { //auto only outputs
-			SmartDashboard.putNumber("NavX PID Setpoint", Robot.navX.turnController.getSetpoint());
+			//SmartDashboard.putNumber("NavX PID Setpoint", Robot.navX.getSetpoint());
 		} else if (RobotState.isOperatorControl() && RobotState.isEnabled()) { //teleop only outputs
 			
 		} 
@@ -53,6 +54,8 @@ public class OI {
 		lX = left.getX();
 		lY = left.getY();
 		lZ = left.getZ();
+		
+		lTrigger = left.getRawButton(0);
 		
 		rX = right.getX();
 		rY = right.getY();
@@ -91,4 +94,6 @@ public class OI {
 		disabledState = false;
 		return false;
 	}
+	
+	
 }
