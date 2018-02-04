@@ -90,18 +90,18 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		OI.updateXbox();
+		
+		OI.update();
+		
 		drivebase.drive(OI.lY, OI.rY);
 		
-		if (OI.lTrigger) {
+		if (OI.lBtn[0]) {
 			intake.set(0.6);
 		} else {
 			intake.set(0);
 		}
 		
-		intake.setPiston(OI.xBtnA);
-		
-		
+		intake.setPiston(OI.lBtn[1]);
 	}
 
 	/**

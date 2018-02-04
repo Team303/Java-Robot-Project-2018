@@ -22,6 +22,7 @@ public class OI {
 	static boolean[] lBtn = new boolean[9];
 	static boolean[] rBtn = new boolean[9];	
 	static boolean xBtnA, xBtnB, xBtnX, xBtnY, xLeftBumper, xRightBumper, xBtnStart, xBtnBack, xLeftStickBtn, xRightStickBtn, lTrigger, rTrigger;
+	static boolean lBtn1;
 	
 	public static void update() {
 		
@@ -31,7 +32,7 @@ public class OI {
 			SmartDashboard.putNumber("POV value", right.getPOV());
 		}
 		
-		updateXbox();
+		updateValues();
 		//preferences = NetworkTable.getTable("Preferences");
 		
 	}
@@ -50,13 +51,11 @@ public class OI {
 		
 	}
 	
-	public static void updateXbox() {
+	public static void updateValues() {
 		lX = left.getX();
 		lY = left.getY();
 		lZ = left.getZ();
-		
-		lTrigger = left.getRawButton(0);
-		
+				
 		rX = right.getX();
 		rY = right.getY();
 		rZ = right.getZ();
