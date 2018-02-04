@@ -91,7 +91,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		OI.updateXbox();
-		drivebase.drive(OI.lX, OI.lY);
+		drivebase.drive(OI.lY, OI.rY);
 		
 		if (OI.lTrigger) {
 			intake.set(0.6);
