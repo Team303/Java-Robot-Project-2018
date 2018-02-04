@@ -24,7 +24,7 @@ public class OI {
 	
 	public static void update() {
 		
-		for(int i=1;i<8;i++) { //wpilib buttons are 1 indexed
+		for(int i=1;i<8;i++) { 
 			lBtn[i] = left.getRawButton(i);
 			rBtn[i] = right.getRawButton(i);
 			SmartDashboard.putNumber("POV value", right.getPOV());
@@ -37,33 +37,16 @@ public class OI {
 	
 	public static void outputs() {
 		
-/*		if(RobotState.isOperatorControl() && RobotState.isAutonomous()) { //auto only outputs
+		if(RobotState.isOperatorControl() && RobotState.isAutonomous()) { //auto only outputs
 			SmartDashboard.putNumber("NavX PID Setpoint", Robot.navX.turnController.getSetpoint());
 		} else if (RobotState.isOperatorControl() && RobotState.isEnabled()) { //teleop only outputs
 			
 		} 
-		*/
+		
 		//amperage outputs
 		/*SmartDashboard.putNumber("Right Drive Current", Robot.pdp.getCurrent(2));
-		SmartDashboard.putNumber("Right Drive Current 2", Robot.pdp.getCurrent(3));
-		SmartDashboard.putNumber("Climber Current", Robot.pdp.getCurrent(14));		
-		SmartDashboard.putNumber("Climber Current 2", Robot.pdp.getCurrent(15));
-		SmartDashboard.putNumber("Intake current", Robot.pdp.getCurrent(10));
-		SmartDashboard.putNumber("Agitator current", Robot.pdp.getCurrent(11));
-		SmartDashboard.putNumber("NACRAC Current", Robot.pdp.getCurrent(4));	
-		SmartDashboard.putNumber("Left Drive Current", Robot.pdp.getCurrent(12));
-		SmartDashboard.putNumber("Left Drive Current 2", Robot.pdp.getCurrent(13));
-		SmartDashboard.putNumber("Big Fan Current", Robot.pdp.getCurrent(6));
-		SmartDashboard.putNumber("PDP Temperature", (Robot.pdp.getTemperature()*1.8)+32);
+		SmartDashboard.putNumber("Right Drive Current 2", Robot.pdp.getCurrent(3));*/
 		
-		//universal outputs
-		SmartDashboard.putNumber("Time Elapsed", Robot.timer.get());
-		SmartDashboard.putNumber("Theta", Robot.navX.getYaw());
-		SmartDashboard.putNumber("Rectangle Area", Robot.camera.getArea());
-		SmartDashboard.putNumber("Shooter Percent Voltage", (Math.abs(Robot.shooter.shooter.getOutputVoltage()/Robot.pdp.getVoltage())));
-		SmartDashboard.putNumber("Shooter Velocity", Math.abs(Robot.shooter.getSpeed()));
-		SmartDashboard.putNumber("L Encoder", Robot.drivebase.getLeftEncoder());
-		SmartDashboard.putNumber("R Encoder", Robot.drivebase.getRightEncoder());*/
 	}
 	
 	public static void updateXbox() {
