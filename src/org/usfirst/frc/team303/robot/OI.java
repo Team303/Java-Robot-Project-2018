@@ -25,7 +25,6 @@ public class OI {
 	static boolean lBtn1;
 	
 	public static void update() {
-		
 		for(int i=1;i<8;i++) { 
 			lBtn[i] = left.getRawButton(i);
 			rBtn[i] = right.getRawButton(i);

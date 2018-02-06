@@ -8,8 +8,11 @@
 package org.usfirst.frc.team303.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import jaci.pathfinder.Pathfinder;
+import jaci.pathfinder.Waypoint;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -18,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * creating this project, you must also update the build.properties file in the
  * project.
  */
+@SuppressWarnings("deprecation")
 public class Robot extends IterativeRobot {
 	private static final String kDefaultAuto = "Default";
 	private static final String kCustomAuto = "My Auto";
@@ -25,11 +29,11 @@ public class Robot extends IterativeRobot {
 	private SendableChooser<String> m_chooser = new SendableChooser<>();
 	
 	
-	static NavX navX;
-	static Lift lift;
-	static Climber climber;
-	static Drivebase drivebase;
-	static Intake intake;
+	public static NavX navX;
+	public static Lift lift;
+	public static Climber climber;
+	public static Drivebase drivebase;
+	public static Intake intake;
 
 
 	/**
@@ -47,8 +51,39 @@ public class Robot extends IterativeRobot {
 		climber = new Climber();
 		intake = new Intake();
 		drivebase = new Drivebase();
+		
+		NetworkTable pathfinderInputTable = NetworkTable.getTable("pathfinderInput");
+		//NetworkTable pathfinderOutputTable = NetworkTable.getTable("pathfinderOutput");
+		
+		
+		pathfinderInputTable.putNumber("timeStep", Path.timeStep);
+		pathfinderInputTable.putNumber("maxVel", Path.maxVel);
+		pathfinderInputTable.putNumber("maxAccel", Path.maxAccel);
+		pathfinderInputTable.putNumber("maxJerk", Path.maxJerk);
 
+		pathfinderInputTable.putString("waypoints", Path.serializeWaypointArray2d(new Waypoint[][] {
+			{//this is waypoints[0], and will output to trajectories[0]
+				new Waypoint(0, 0, 0),
+				new Waypoint(7, 4, Pathfinder.d2r(30)), //this point is waypoints[0, 1]
+				new Waypoint(13, 3.5, 0),
+				new Waypoint(18, 4, 0)
+			}, {
+				new Waypoint(0, 0, 0), //this point is waypoints[1, 0]
+				new Waypoint(7, 6, Pathfinder.d2r(30)),
+				new Waypoint(12, 1, 0),
+				new Waypoint(18, 4, 0)
+			}, {//this is waypoints[2] and will output to trajectories[2]
+				new Waypoint(0, 0, 0),
+				new Waypoint(4, -4, Pathfinder.d2r(330)),
+				new Waypoint(8, -6, 0),
+				new Waypoint(12, -4, Pathfinder.d2r(90)),
+				new Waypoint(10, 2, Pathfinder.d2r(180))
+			}
+		}));
 	}
+	
+	
+	
 
 	/**
 	 * This autonomous (along with the chooser code above) shows how to select
@@ -76,7 +111,9 @@ public class Robot extends IterativeRobot {
 	public void autonomousPeriodic() {
 		switch (m_autoSelected) {
 			case kCustomAuto:
-				// Put custom auto code here
+
+				NetworkTable.flush();
+				
 				break;
 			case kDefaultAuto:
 			default:
