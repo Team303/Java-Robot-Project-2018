@@ -47,9 +47,9 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Auto choices", m_chooser);
 		
 		navX = new NavX();
-		lift = new Lift();
-		climber = new Climber();
-		intake = new Intake();
+		//lift = new Lift();
+		//climber = new Climber();
+		//intake = new Intake();
 		drivebase = new Drivebase();
 		
 		NetworkTable pathfinderInputTable = NetworkTable.getTable("pathfinderInput");
@@ -132,13 +132,13 @@ public class Robot extends IterativeRobot {
 		
 		drivebase.drive(OI.lY, OI.rY);
 		
-		if (OI.lBtn[0]) {
+	/*	if (OI.lBtn[0]) {
 			intake.set(0.6);
 		} else {
 			intake.set(0);
-		}
+		}*/
 		
-		intake.setPiston(OI.lBtn[1]);
+	//	intake.setPiston(OI.lBtn[1]);
 	}
 
 	/**
