@@ -34,6 +34,7 @@ public class Robot extends IterativeRobot {
 	public static Climber climber;
 	public static Drivebase drivebase;
 	public static Intake intake;
+	public static Autonomous auto;
 
 
 	/**
@@ -51,6 +52,7 @@ public class Robot extends IterativeRobot {
 		//climber = new Climber();
 		//intake = new Intake();
 		drivebase = new Drivebase();
+		auto = new Autonomous();
 		
 		NetworkTable pathfinderInputTable = NetworkTable.getTable("pathfinderInput");
 		//NetworkTable pathfinderOutputTable = NetworkTable.getTable("pathfinderOutput");
@@ -120,6 +122,9 @@ public class Robot extends IterativeRobot {
 				// Put default auto code here
 				break;
 		}
+		
+		auto.run();
+		
 	}
 
 	/**

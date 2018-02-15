@@ -15,13 +15,10 @@ public class Drivebase {
 	private WPI_TalonSRX leftFront = new WPI_TalonSRX(RobotMap.FRONT_LEFT);
 	private WPI_TalonSRX leftMiddle = new WPI_TalonSRX(RobotMap.MIDDLE_LEFT);
 	private WPI_TalonSRX leftBack = new WPI_TalonSRX(RobotMap.REAR_LEFT);
-
-
 	
 	SpeedControllerGroup rightMotors = new SpeedControllerGroup(rightBack, rightMiddle, rightFront);
 	SpeedControllerGroup leftMotors = new SpeedControllerGroup(leftBack, leftMiddle, leftFront);
 	DifferentialDrive drive = new DifferentialDrive(leftMotors, rightMotors);
-
 
 	public Drivebase() {
 		rightBack.setInverted(RobotMap.REAR_RIGHT_INV);
@@ -43,7 +40,6 @@ public class Drivebase {
 	public void zeroEncoder() {
 		leftFront.setSelectedSensorPosition(0, 0, 0);
 		rightBack.setSelectedSensorPosition(0, 0, 0);
-
 	}
 	
 	public int getLeftEncoder() {
