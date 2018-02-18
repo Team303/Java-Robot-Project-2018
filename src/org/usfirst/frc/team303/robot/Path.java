@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Base64;
+import java.util.HashMap;
 
 import org.usfirst.frc.team303.robot.action.ActionDriveByTrajectory;
 
@@ -83,25 +84,13 @@ public class Path {
 		}
 	}
 	
-	public static Trajectory[] deserializeTrajectoryArray(String serializedTrajectoryArray) {
-		Trajectory[] trajectories = null; 
-		try {
-			byte[] b = Base64.getDecoder().decode(serializedTrajectoryArray.getBytes()); 
-			ByteArrayInputStream bi = new ByteArrayInputStream(b);
-			ObjectInputStream si = new ObjectInputStream(bi);
-			trajectories = (Trajectory[]) si.readObject();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return trajectories;
-	}
-
-	public static String serializeWaypointArray2d(Waypoint[][] waypoints2d) {
+	
+	public static String serializeWaypointMap(HashMap<String, Waypoint[]> map) {
 		String serializedWaypoints = "";
 		try {
 			ByteArrayOutputStream bo = new ByteArrayOutputStream();
 			ObjectOutputStream so = new ObjectOutputStream(bo);
-			so.writeObject(waypoints2d);
+			so.writeObject(map);
 			so.flush();
 			serializedWaypoints = new String(Base64.getEncoder().encode(bo.toByteArray()));
 		} catch (Exception e) {
@@ -109,5 +98,22 @@ public class Path {
 		}
 		return serializedWaypoints;
 	}
+	
+
+	
+	public static HashMap<String, Trajectory> deserializeTrajectoryMap(String hashmap) {
+		HashMap<String, Trajectory> map = null;
+		try {
+		     byte[] b = Base64.getDecoder().decode(hashmap.getBytes()); 
+		     ByteArrayInputStream bi = new ByteArrayInputStream(b);
+		     ObjectInputStream si = new ObjectInputStream(bi);
+		     map = (HashMap) si.readObject();
+		 } catch (Exception e) {
+		     System.out.println(e);
+		 }
+		return map;
+	}
+	
+	
 
 }
