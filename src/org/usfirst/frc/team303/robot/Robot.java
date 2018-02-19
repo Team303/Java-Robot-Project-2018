@@ -29,7 +29,9 @@ public class Robot extends IterativeRobot {
 	
 	private int position;
 	private int config;
-
+	
+	private double wheelSpeed = 0.75;
+	
 	private String message;
 
 	private String m_autoSelected;
@@ -185,25 +187,43 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		OI.update();
+	
+		//drivebase
+		drivebase.drive(OI.lY, OI.rY);
 
+		//intake wheels
+		if(OI.lBtn[2]) { //in
+			intake.setWheels(-wheelSpeed, wheelSpeed);
+		} else if(OI.lPov==0) { //out
+			intake.setWheels(wheelSpeed, -wheelSpeed);
+		} else if(OI.lBtn[5]) { //left
+			intake.setWheels(wheelSpeed, wheelSpeed);
+		} else if(OI.lBtn[6]) { //right
+			intake.setWheels(-wheelSpeed, -wheelSpeed);
+		} else {
+			intake.setWheels(0, 0);
+		}
+		
 		//intake gripper
-		if(OI.lBtn[5]) {
+		if(OI.xBtnX) {
 			intake.setGripper(true);
-		} else if(OI.lBtn[4]) {
+		} else if(OI.xBtnB) {
 			intake.setGripper(false);
 		}
 		
 		//intake rotation
-		if(OI.lBtn[3]) {
+		if(OI.xBtnY) {
 			intake.setRotation(true);
-		} else if(OI.lBtn[2]) {
+		} else if(OI.xBtnA) {
 			intake.setRotation(false);
 		}
 		
-		lift.setPercentVoltage(OI.lY);
+		//lift
+		lift.setPercentVoltage(OI.xlY);
 		
-		//drivebase.drive(OI.lY, OI.rY);
-
+		SmartDashboard.putNumber("left encoder", drivebase.getLeftEncoder());
+		SmartDashboard.putNumber("right encoder", drivebase.getRightEncoder());
+		
 	}
 
 	@Override

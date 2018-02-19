@@ -42,7 +42,7 @@ public class Drivebase {
 	}
 
 	public void drive(double left, double right) {
-		drive.tankDrive(left, right);
+		drive.tankDrive(-left, -right);
 	}
 
 	public void zeroEncoder() {

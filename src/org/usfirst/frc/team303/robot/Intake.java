@@ -22,9 +22,9 @@ public class Intake {
 		rightIntake.setInverted(RobotMap.INTAKE_RIGHT_INV);
 	}
 	
-	public void setWheels(double percentVoltage){
-		leftIntake.set(ControlMode.PercentOutput, percentVoltage);
-		rightIntake.set(ControlMode.PercentOutput, percentVoltage);
+	public void setWheels(double left, double right){
+		leftIntake.set(ControlMode.PercentOutput, left);
+		rightIntake.set(ControlMode.PercentOutput, right);
 	}
 	
 	public void setRotation(boolean extended) {
