@@ -26,7 +26,6 @@ public class ActionDriveStraightByEncoders implements Action {
 	}
 
 	public ActionDriveStraightByEncoders(int distance, double power, double timeout) {
-		//this refers to the instance variable
 		//4096 ticks for one rotation
 		this.distance = distance;
 		//0 to 1 range

@@ -68,9 +68,9 @@ public class Robot extends IterativeRobot {
 		//SmartDashboard.putData("Position", positionChooser);
 
 		navX = new NavX();
-		//lift = new Lift();
-		//climber = new Climber();
-		//intake = new Intake();
+		lift = new Lift();
+		climber = new Climber();
+		intake = new Intake();
 		drivebase = new Drivebase();
 		auto = new Autonomous();
 		auto.initWaypoints();
@@ -164,9 +164,7 @@ public class Robot extends IterativeRobot {
 		String autoNumStr = selectedAuto.substring(0, 1);
 		
 		String autoString = configStr + "-" + positionStr + "-" + autoNumStr;
-		auto.driveTrajectory(autoString);
-		
-		
+		auto.driveTrajectory(autoString);	
 	}
 	
 	
@@ -178,25 +176,42 @@ public class Robot extends IterativeRobot {
 		auto.run();
 	}
 
+	@Override
+	public void teleopInit() {}
+	
 	/**
 	 * This function is called periodically during operator control.
 	 */
 	@Override
 	public void teleopPeriodic() {
-
 		OI.update();
 
-		drivebase.drive(OI.lY, OI.rY);
+		//intake gripper
+		if(OI.lBtn[5]) {
+			intake.setGripper(true);
+		} else if(OI.lBtn[4]) {
+			intake.setGripper(false);
+		}
+		
+		//intake rotation
+		if(OI.lBtn[3]) {
+			intake.setRotation(true);
+		} else if(OI.lBtn[2]) {
+			intake.setRotation(false);
+		}
+		
+		lift.setPercentVoltage(OI.lY);
+		
+		//drivebase.drive(OI.lY, OI.rY);
 
-		/*	if (OI.lBtn[0]) {
-			intake.set(0.6);
-		} else {
-			intake.set(0);
-		}*/
-
-		//	intake.setPiston(OI.lBtn[1]);
 	}
 
+	@Override
+	public void robotPeriodic() {
+		SmartDashboard.putNumber("theta", navX.getYaw());
+		navX.collisionDetected();
+	}
+	
 	/**
 	 * This function is called periodically during test mode.
 	 */

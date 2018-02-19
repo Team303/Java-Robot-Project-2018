@@ -20,7 +20,7 @@ import jaci.pathfinder.followers.EncoderFollower;
 import jaci.pathfinder.modifiers.TankModifier;
 
 public class Path {
-	
+
 	static double timeStep = 0.02;
 	static double maxVel = 11;
 	static double maxAccel = 12;
@@ -30,30 +30,29 @@ public class Path {
 	double wheelDiameter = 0.3283333333333333;
 	//done in feet for now
 	//watch out for a table right about there
-	
+
 	double p = 1;
 	double i = 0;
 	double d = 0.08;
 	double velocityRatio = 1/maxVel;
 	double accelGain = 0.06;
-	
-	// The first argument is the proportional gain. Usually this will be quite high
-		// The second argument is the integral gain. This is unused for motion profiling
-		// The third argument is the derivative gain. Tweak this if you are unhappy with the tracking of the trajectory
-		// The fourth argument is the velocity ratio. This is 1 over the maximum velocity you provided in the 
-		//	      trajectory configuration (it translates m/s to a -1 to 1 scale that your motors can read)
-		// The fifth argument is your acceleration gain. Tweak this if you want to get to a higher or lower speed quicker
-	
 
-		double l;
-		double r;
-		public Trajectory[] trajectoryArray;
-		public Trajectory forwardLeftTrajectory;
-		public Trajectory forwardRightTrajectory;
-		public EncoderFollower testEncLeft;
-		public EncoderFollower testEncRight;
-		
-	
+	// The first argument is the proportional gain. Usually this will be quite high
+	// The second argument is the integral gain. This is unused for motion profiling
+	// The third argument is the derivative gain. Tweak this if you are unhappy with the tracking of the trajectory
+	// The fourth argument is the velocity ratio. This is 1 over the maximum velocity you provided in the 
+	//	      trajectory configuration (it translates m/s to a -1 to 1 scale that your motors can read)
+	// The fifth argument is your acceleration gain. Tweak this if you want to get to a higher or lower speed quicker
+
+	double l;
+	double r;
+	public Trajectory[] trajectoryArray;
+	public Trajectory forwardLeftTrajectory;
+	public Trajectory forwardRightTrajectory;
+	public EncoderFollower testEncLeft;
+	public EncoderFollower testEncRight;
+
+
 	public Path(Trajectory forwardTrajectory) {
 		try{	
 			/*System.out.println("Generating trajectory...");
@@ -61,30 +60,29 @@ public class Path {
 			forwardTrajectory = Pathfinder.generate(points, testConfig);
 			TankModifier testModifier = new TankModifier(forwardTrajectory).modify(wheelBaseWidth);
 			System.out.println("Trajectory Generation completed");*/
-			
+
 			TankModifier testModifier = new TankModifier(forwardTrajectory).modify(wheelBaseWidth);
-			
+
 			forwardLeftTrajectory = testModifier.getLeftTrajectory();
 			forwardRightTrajectory = testModifier.getRightTrajectory();
-			
+
 			testEncLeft = new EncoderFollower(forwardLeftTrajectory);
 			testEncRight = new EncoderFollower(forwardRightTrajectory);
 			testEncLeft.configureEncoder(Robot.drivebase.getLeftEncoder(), ticksPerRev, wheelDiameter);
 			testEncRight.configureEncoder(Robot.drivebase.getRightEncoder(), ticksPerRev, wheelDiameter);
 			testEncLeft.configurePIDVA(p, i, d, velocityRatio, accelGain);
 			testEncRight.configurePIDVA(p, i, d, velocityRatio, accelGain);
-		
+
 			/*for(int i = 0; i < forwardTrajectory.segments.length; i++) {
 				System.out.println("Segment " + i + ") x: " + forwardTrajectory.segments[i].x + " y: " + forwardTrajectory.segments[i].y + " heading: " + Pathfinder.r2d(forwardTrajectory.segments[i].heading));
 			}*/
-			
+
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("Error in Path Construction" + e.getMessage());
 		}
 	}
-	
-	
+
 	public static String serializeWaypointMap(HashMap<String, Waypoint[]> map) {
 		String serializedWaypoints = "";
 		try {
@@ -98,22 +96,20 @@ public class Path {
 		}
 		return serializedWaypoints;
 	}
-	
 
-	
 	public static HashMap<String, Trajectory> deserializeTrajectoryMap(String hashmap) {
 		HashMap<String, Trajectory> map = null;
 		try {
-		     byte[] b = Base64.getDecoder().decode(hashmap.getBytes()); 
-		     ByteArrayInputStream bi = new ByteArrayInputStream(b);
-		     ObjectInputStream si = new ObjectInputStream(bi);
-		     map = (HashMap) si.readObject();
-		 } catch (Exception e) {
-		     System.out.println(e);
-		 }
+			byte[] b = Base64.getDecoder().decode(hashmap.getBytes()); 
+			ByteArrayInputStream bi = new ByteArrayInputStream(b);
+			ObjectInputStream si = new ObjectInputStream(bi);
+			map = (HashMap<String, Trajectory>) si.readObject();		    	 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return map;
 	}
-	
-	
+
+
 
 }

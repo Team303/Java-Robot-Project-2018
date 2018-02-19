@@ -1,16 +1,7 @@
 package org.usfirst.frc.team303.robot;
 
-import java.beans.XMLEncoder;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
-import java.util.Map;
-
 import org.usfirst.frc.team303.robot.action.Action;
 import org.usfirst.frc.team303.robot.action.ActionDriveByTrajectory;
 
@@ -27,7 +18,7 @@ public class Autonomous {
 	private int count = 0;
 	public Trajectory[] trajectoryArray;
 	NetworkTable pathfinderInputTable;
-	HashMap<String, Waypoint[]> hmap = new HashMap<String, Waypoint[]>();
+	HashMap<String, Waypoint[]> wayMap = new HashMap<String, Waypoint[]>();
 	
 	public Autonomous() {
 		pathfinderInputTable = NetworkTable.getTable("pathfinderInput");
@@ -50,38 +41,35 @@ public class Autonomous {
 
 
 	public void driveTrajectory(String trajectoryName){ //TODO change auto name to match trajectory goal
-		HashMap map = (HashMap) Path.deserializeTrajectoryMap(pathfinderOutputTable.getString("path", ""));
+		HashMap<String, Trajectory> map = (HashMap<String, Trajectory>) Path.deserializeTrajectoryMap(pathfinderOutputTable.getString("path", null));
 		Trajectory trajectory = (Trajectory) map.get(trajectoryName);
 		add(new ActionDriveByTrajectory(trajectory));
 	}
-	
-	
+		
 	//WAYPOINTS
 	public void initWaypoints() {
 		pathfinderInputTable.putNumber("timeStep", Path.timeStep);
 		pathfinderInputTable.putNumber("maxVel", Path.maxVel);
 		pathfinderInputTable.putNumber("maxAccel", Path.maxAccel);
 		pathfinderInputTable.putNumber("maxJerk", Path.maxJerk);
-		
-		Waypoint[] waypointArr = new Waypoint[20];
-		
+			
+		Waypoint[] waypointArr = new Waypoint[2];
 		waypointArr = new Waypoint[] {
 				new Waypoint(0, 0, 0),
 				new Waypoint(8.75, -3.75, Pathfinder.d2r(30))
 		};
 		
-		hmap.put("2-1-1", waypointArr);
-		
-		waypointArr = new Waypoint[] {
+		Waypoint[] waypointArr2 = new Waypoint[3];
+		waypointArr2 = new Waypoint[] {
 				new Waypoint(0, 0, 0),
 				new Waypoint(9.167, 0, 0),
 				new Waypoint(12.5, 1.67, Pathfinder.d2r(90))
 		};
 		
-		hmap.put("3-3-1 Switch", waypointArr);
+		wayMap.put("2-1-1", waypointArr);
+		wayMap.put("3-3-1 Switch", waypointArr2);
 		
-		pathfinderInputTable.putString("waypoints", Path.serializeWaypointMap(hmap));
-		
+		pathfinderInputTable.putString("waypoints", Path.serializeWaypointMap(wayMap));
 	}
 	
 	public String[][][] getAutoList() {

@@ -7,19 +7,20 @@ import edu.wpi.first.wpilibj.Solenoid;
 
 public class Climber {
 
-	TalonSRX climber = new TalonSRX(RobotMap.CLIMBER_ID);
-	
+	TalonSRX winch;
+	Solenoid hookDeploy;
 	
 	public Climber(){
-		climber.setInverted(RobotMap.CLIMBER_INV);
+		winch = new TalonSRX(RobotMap.CLIMBER_WINCH_ID);
+		winch.setInverted(RobotMap.CLIMBER_WINCH_INV);
+		hookDeploy = new Solenoid(RobotMap.CLIMBER_HOOK_DEPLOY_SOLENOID_ID);
 	}
 	
-	public void set(boolean run, double percentVoltage){
-		if (run) {
-			climber.set(ControlMode.PercentOutput, percentVoltage);
-		} else {
-			climber.set(ControlMode.PercentOutput, 0);
-		}
-		
+	public void setWinch(double percentVoltage){
+		winch.set(ControlMode.PercentOutput, percentVoltage);
+	}
+	
+	public void setPistons(boolean deployed) {
+		hookDeploy.set(deployed);
 	}
 }
