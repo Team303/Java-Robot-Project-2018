@@ -27,16 +27,13 @@ public class Robot extends IterativeRobot {
 	private static final String kDefaultAuto = "Default";
 	private static final String kCustomAuto = "My Auto";
 	
-	private int position;
 	private int config;
-	
 	private double wheelSpeed = 0.75;
-	
 	private String message;
 
 	private String m_autoSelected;
 	private SendableChooser<String> m_chooser = new SendableChooser<>();
-	private String[][][] autoList;
+	private String[][] autoList;
 	
 	private SendableChooser<String> positionChooser = new SendableChooser<>();
 	private SendableChooser<String> config1 = new SendableChooser<>();
@@ -63,12 +60,6 @@ public class Robot extends IterativeRobot {
 		m_chooser.addObject("My Auto", kCustomAuto);
 		SmartDashboard.putData("Auto choices", m_chooser);
 		
-		//positionChooser.addDefault("Choose", "Choose");
-		//positionChooser.addDefault("1", "1");
-		//positionChooser.addDefault("2", "2");
-		//positionChooser.addDefault("3", "3");
-		//SmartDashboard.putData("Position", positionChooser);
-
 		navX = new NavX();
 		lift = new Lift();
 		climber = new Climber();
@@ -78,8 +69,6 @@ public class Robot extends IterativeRobot {
 		auto.initWaypoints();
 		
 		autoList = auto.getAutoList();
-		
-		position = DriverStation.getInstance().getLocation();
 		int configIndex = 1;
 		
 		config1.addDefault("Config 1", "Config 1");
@@ -87,8 +76,8 @@ public class Robot extends IterativeRobot {
 		config3.addDefault("Config 3", "Config 3");
 		config4.addDefault("Config 4", "Config 4");
 		
-		for (String[][] config : autoList) {
-			for (String autoName : config[position - 1]) {
+		for (String[] config : autoList) {
+			for (String autoName : config) {
 				switch (configIndex) {
 					case 1:
 						config1.addObject(autoName, autoName);
@@ -128,10 +117,14 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousInit() {
+		
+		//Message is three character string with first letter as switch and second as scale
 		message = DriverStation.getInstance().getGameSpecificMessage();
 		
 		String switchStr = message.substring(0,1);
 		String scaleStr = message.substring(1,2);
+
+		//Depending on the configuration, choose the configuration number 
 		if (switchStr.equals("R") && scaleStr.equals("L")) {
 			config = 1;
 		} else if (switchStr.equals("L") && scaleStr.equals("R")) {
@@ -142,8 +135,8 @@ public class Robot extends IterativeRobot {
 			config = 4;
 		} 
 		
+		//Get the selected auto for the configuration that is running
 		String selectedAuto = "";
-		
 		switch (config) {
 			case 1:
 				selectedAuto = config1.getSelected();
@@ -161,11 +154,26 @@ public class Robot extends IterativeRobot {
 				break;
 		}
 		
+		String position = "";
 		String configStr = Integer.toString(config);
-		String positionStr = Integer.toString(position);
-		String autoNumStr = selectedAuto.substring(0, 1);
+		String positionSub = selectedAuto.substring(0,1);
 		
-		String autoString = configStr + "-" + positionStr + "-" + autoNumStr;
+		//Get the positions as they are in the auto drawings
+		switch (positionSub) {
+			case "L":
+				position = "1";
+				break;
+			case "C":
+				position = "2";
+				break;
+			case "R":
+				position = "3";
+				break;
+		}
+		
+		String autoNumStr = selectedAuto.substring(2, 3);	
+		String autoString = configStr + "-" + position + "-" + autoNumStr;
+		
 		auto.driveTrajectory(autoString);	
 	}
 	
