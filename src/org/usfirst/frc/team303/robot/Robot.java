@@ -124,35 +124,22 @@ public class Robot extends IterativeRobot {
 		String switchStr = message.substring(0,1);
 		String scaleStr = message.substring(1,2);
 
+		String selectedAuto = "";
+		
 		//Depending on the configuration, choose the configuration number 
 		if (switchStr.equals("R") && scaleStr.equals("L")) {
 			config = 1;
+			selectedAuto = config1.getSelected();
 		} else if (switchStr.equals("L") && scaleStr.equals("R")) {
 			config = 2;
+			selectedAuto = config2.getSelected();
 		} else if (switchStr.equals("R") && scaleStr.equals("R")) {
 			config = 3;
+			selectedAuto = config3.getSelected();
 		} else if (switchStr.equals("L") && scaleStr.equals("L")) {
 			config = 4;
+			selectedAuto = config4.getSelected();
 		} 
-		
-		//Get the selected auto for the configuration that is running
-		String selectedAuto = "";
-		switch (config) {
-			case 1:
-				selectedAuto = config1.getSelected();
-				break;
-			case 2:
-				selectedAuto = config2.getSelected();
-				break;
-			case 3:
-				selectedAuto = config3.getSelected();
-				break;
-			case 4:
-				selectedAuto = config4.getSelected();
-				break;
-			default:
-				break;
-		}
 		
 		String position = "";
 		String configStr = Integer.toString(config);

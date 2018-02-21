@@ -1,40 +1,85 @@
 package org.usfirst.frc.team303.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 public class Lift {
 
 	TalonSRX lift;
 	public static final int kTimeoutMs = 1000;
+	int setpoint = 0;
+
+	//Stop range is the range above and below the setpoint where the robot should stop moving
+	//stopRange < outerRange
+		//When you are inside the outerRange, set the power to 0.4
+	int stopRange = 1000;
+	int outerRange = 3000;
 
 	public Lift() {
 		lift = new TalonSRX(RobotMap.LIFT_ID);
 		lift.setInverted(RobotMap.LIFT_INV);
-
-		//Profile Slot 0
-		lift.selectProfileSlot(0, 0);
-		lift.config_kF(0, 0.2, kTimeoutMs);
-		lift.config_kP(0, 0.2, kTimeoutMs);
-		lift.config_kI(0, 0, kTimeoutMs);
-		lift.config_kD(0, 0, kTimeoutMs);
-
-		//Profile Slot 1
-		lift.selectProfileSlot(1, 0);
-		lift.config_kF(1, 0.2, kTimeoutMs);
-		lift.config_kP(1, 0.2, kTimeoutMs);
-		lift.config_kI(1, 0, kTimeoutMs);
-		lift.config_kD(1, 0, kTimeoutMs);
-		//lift.config_IntegralZone(0, 100, Constants.kTimeoutMs);
+		Robot.drivebase.rightMiddle.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 1000);
 	}
+	
+	public void setSetpoint(int setpoint) {
+		this.setpoint = setpoint; 
+	}
+	
+	public boolean autoControl() {
+		int encoderPosition = getEncoder();
+		
+		int topStopRange = setpoint + stopRange;
+		int bottomStopRange = setpoint - stopRange;
+		int topOuterRange = setpoint + outerRange;
+		int bottomOuterRange = setpoint - outerRange;
 
-//	public void set(double setPoint, int slot) {
-//		lift.selectProfileSlot(slot, 0);
-//		lift.set(ControlMode.Position, setPoint);
-//	}
+		if (setpoint > 0) {
+			if (encoderPosition > topStopRange) {
+				//Go down because the encoder is greater than the range for the setpoint
+				if (encoderPosition < topOuterRange) {
+					setPercentVoltage(-0.4);
+				} else if (encoderPosition > topOuterRange) {
+					setPercentVoltage(-0.8);
+				}
+				return false;
+			} else if (encoderPosition < bottomStopRange) {
+				//Go up because the encoder is less than the range for the setpoint
+				if (encoderPosition > bottomOuterRange) {
+					setPercentVoltage(0.4);
+				} else if (encoderPosition < bottomOuterRange) {
+					setPercentVoltage(0.8);
+				}
+				return false;
+			} else if (encoderPosition > bottomStopRange && encoderPosition < topStopRange) {
+				//Stop lift because it is within the range
+				setPercentVoltage(0);
+				return true;
+			}
+		} else if (setpoint == 0) {
+			if (encoderPosition > topOuterRange) {
+				setPercentVoltage(-0.6);
+				return false;
+			} else if (encoderPosition < topOuterRange && encoderPosition > topStopRange) {
+				setPercentVoltage(-0.2);
+				return false;
+			} else if (encoderPosition < topStopRange) {
+				setPercentVoltage(0);
+				return true;
+			}
+		} else {
+			return true;
+		}
+		
+		return true;
+	}
+	
+	public int getEncoder() {
+		return Robot.drivebase.rightMiddle.getSelectedSensorPosition(0);
+	}
 	
 	public void setPercentVoltage(double power) {
-		lift.set(ControlMode.Current, power);
+		lift.set(ControlMode.PercentOutput, power);
 	}
 
 }

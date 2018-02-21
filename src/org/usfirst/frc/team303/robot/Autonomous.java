@@ -53,9 +53,10 @@ public class Autonomous {
 		pathfinderInputTable.putNumber("maxAccel", Path.maxAccel);
 		pathfinderInputTable.putNumber("maxJerk", Path.maxJerk);
 			
+		
 		Waypoint[] waypointArr = {
 				new Waypoint(0, 0, 0),
-				new Waypoint(8.75, -3.75, Pathfinder.d2r(30))
+				new Waypoint(8.75, -3.75, Pathfinder.d2r(0))
 		};
 		
 		Waypoint[] waypointArr2 =  {
@@ -64,7 +65,7 @@ public class Autonomous {
 				new Waypoint(12.5, 1.67, Pathfinder.d2r(90))
 		};
 		
-		wayMap.put("2-1-1", waypointArr);
+		wayMap.put("2-3-1", waypointArr);
 		wayMap.put("3-3-1", waypointArr2);
 	
 

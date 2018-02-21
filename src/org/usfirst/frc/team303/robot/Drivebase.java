@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.drive.*;
 public class Drivebase {
 
 	private WPI_TalonSRX rightBack;
-	private WPI_TalonSRX rightMiddle;
+	public WPI_TalonSRX rightMiddle;
 	private WPI_TalonSRX rightFront;
 	private WPI_TalonSRX leftFront;
 	private WPI_TalonSRX leftMiddle;
