@@ -22,7 +22,7 @@ public class RobotMap {
 	public static final int CLIMBER_HOOK_DEPLOY_SOLENOID_ID = 2;
 	
 	public static final int LIFT_ID = 2;
-	public static final boolean LIFT_INV = false;
+	public static final boolean LIFT_INV = true;
 	
 	public static final int INTAKE_LEFT_ID = 15;
 	public static final int INTAKE_RIGHT_ID = 12;

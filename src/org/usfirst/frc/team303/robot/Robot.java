@@ -7,6 +7,7 @@
 
 package org.usfirst.frc.team303.robot;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
@@ -47,7 +48,8 @@ public class Robot extends IterativeRobot {
 	public static Drivebase drivebase;
 	public static Intake intake;
 	public static Autonomous auto;
-
+	public static Compressor compressor;
+	
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -66,6 +68,7 @@ public class Robot extends IterativeRobot {
 		intake = new Intake();
 		drivebase = new Drivebase();
 		auto = new Autonomous();
+		compressor = new Compressor();
 		auto.initWaypoints();
 		
 		autoList = auto.getAutoList();
@@ -120,6 +123,9 @@ public class Robot extends IterativeRobot {
 		
 		//Message is three character string with first letter as switch and second as scale
 		message = DriverStation.getInstance().getGameSpecificMessage();
+		while(message.length()>0) {
+			message = DriverStation.getInstance().getGameSpecificMessage();
+		}
 		
 		String switchStr = message.substring(0,1);
 		String scaleStr = message.substring(1,2);
@@ -208,12 +214,31 @@ public class Robot extends IterativeRobot {
 		
 		//intake rotation
 		if(OI.xBtnY) {
-			intake.setRotation(true);
-		} else if(OI.xBtnA) {
 			intake.setRotation(false);
+		} else if(OI.xBtnA) {
+			intake.setRotation(true);
 		}
 		
-		lift.autoControl();
+		//climber
+		if(OI.xLeftBumper) {
+			climber.setPistons(true);
+		} else if(OI.xRightBumper) {
+			climber.setPistons(false);
+		}
+		
+		if(Math.abs(OI.xrY)>0.1) {
+			climber.setWinch(OI.xrY);			
+		}
+		
+//		//lift
+//		if(OI.xPov==0) { //up
+//			lift.setSetpoint(30000);
+//		} else if(OI.xPov==180) { //down
+//			lift.setSetpoint(0);
+//		}
+		
+		lift.setPercentVoltage(-OI.xlY);
+//		lift.autoControl();
 	}
 
 	@Override
@@ -222,6 +247,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("right encoder", drivebase.getRightEncoder());
 		SmartDashboard.putNumber("lift encoder", lift.getEncoder());
 		SmartDashboard.putNumber("theta", navX.getYaw());
+		SmartDashboard.putBoolean("compressor on", compressor.enabled());
 		navX.collisionDetected();
 	}
 	

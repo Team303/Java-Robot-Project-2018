@@ -2,6 +2,8 @@ package org.usfirst.frc.team303.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 public class Lift {
@@ -12,12 +14,10 @@ public class Lift {
 	public static final int kTimeoutMs = 1000;
 	int setpoint = 0;
 
-	//Stop range is the range above and below the setpoint where the robot should stop moving
-	//stopRange < outerRange
-		//When you are inside the outerRange, set the power to 0.4
-	int stopRange = 3000;
-	int outerRange = 10000;
-
+	final static int STOP_RANGE = 2000;
+	final static int OUTER_RANGE = 10000;
+	final static int OUTER_RANGE_2 = 20000;
+	
 	public Lift() {
 		lift = new TalonSRX(RobotMap.LIFT_ID);
 		liftEncoder = new TalonSRX(RobotMap.MIDDLE_LEFT);
@@ -29,52 +29,27 @@ public class Lift {
 		this.setpoint = setpoint; 
 	}
 	
-	public boolean autoControl() {
+	//depending on how this works we may just want to replace with a p loop
+	public void autoControl() {
 		int encoderPosition = getEncoder();
+		int error = Math.abs(setpoint-getEncoder());
+		double power = 0;
 		
-		int topStopRange = setpoint + stopRange;
-		int bottomStopRange = setpoint - stopRange;
-		int topOuterRange = setpoint + outerRange;
-		int bottomOuterRange = setpoint - outerRange;
-
-		if (setpoint > 0) {
-			if (encoderPosition > topStopRange) {
-				//Go down because the encoder is greater than the range for the setpoint
-				if (encoderPosition < topOuterRange) {
-					setPercentVoltage(-0.4);
-				} else if (encoderPosition > topOuterRange) {
-					setPercentVoltage(-0.8);
-				}
-				return false;
-			} else if (encoderPosition < bottomStopRange) {
-				//Go up because the encoder is less than the range for the setpoint
-				if (encoderPosition > bottomOuterRange) {
-					setPercentVoltage(0.4);
-				} else if (encoderPosition < bottomOuterRange) {
-					setPercentVoltage(0.8);
-				}
-				return false;
-			} else if (encoderPosition > bottomStopRange && encoderPosition < topStopRange) {
-				//Stop lift because it is within the range
-				setPercentVoltage(0);
-				return true;
-			}
-		} else if (setpoint == 0) {
-			if (encoderPosition > topOuterRange) {
-				setPercentVoltage(-0.6);
-				return false;
-			} else if (encoderPosition < topOuterRange && encoderPosition > topStopRange) {
-				setPercentVoltage(-0.2);
-				return false;
-			} else if (encoderPosition < topStopRange) {
-				setPercentVoltage(0);
-				return true;
-			}
-		} else {
-			return true;
+		if(setpoint==0) {
+			setPercentVoltage(-0.5);
+			return;
 		}
 		
-		return true;
+		if(error>=OUTER_RANGE_2) power = 1;
+		else if(error>=OUTER_RANGE) power = 0.8;
+		else if(error>=STOP_RANGE) power = 0.6;
+		
+		if(encoderPosition>setpoint) {
+			setPercentVoltage(-power);
+		} else if(encoderPosition<setpoint) {
+			setPercentVoltage(power);
+		}
+		
 	}
 	
 	public int getEncoder() {
