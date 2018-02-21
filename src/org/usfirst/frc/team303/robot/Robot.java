@@ -28,7 +28,7 @@ public class Robot extends IterativeRobot {
 	private static final String kCustomAuto = "My Auto";
 	
 	private int config;
-	private double wheelSpeed = 0.75;
+	private double wheelSpeed = -0.75;
 	private String message;
 
 	private String m_autoSelected;
@@ -60,11 +60,11 @@ public class Robot extends IterativeRobot {
 		m_chooser.addObject("My Auto", kCustomAuto);
 		SmartDashboard.putData("Auto choices", m_chooser);
 		
+		drivebase = new Drivebase();
 		navX = new NavX();
 		lift = new Lift();
 		climber = new Climber();
 		intake = new Intake();
-		drivebase = new Drivebase();
 		auto = new Autonomous();
 		auto.initWaypoints();
 		
@@ -120,6 +120,9 @@ public class Robot extends IterativeRobot {
 		
 		//Message is three character string with first letter as switch and second as scale
 		message = DriverStation.getInstance().getGameSpecificMessage();
+		while(message.length()!=3) {
+			message = DriverStation.getInstance().getGameSpecificMessage();
+		}
 		
 		String switchStr = message.substring(0,1);
 		String scaleStr = message.substring(1,2);
@@ -221,22 +224,31 @@ public class Robot extends IterativeRobot {
 		
 		//intake rotation
 		if(OI.xBtnY) {
-			intake.setRotation(true);
-		} else if(OI.xBtnA) {
 			intake.setRotation(false);
+		} else if(OI.xBtnA) {
+			intake.setRotation(true);
+		}
+		
+		//climber
+		if(OI.xLeftBumper) {
+			climber.setPistons(true);
+		} else if(OI.xRightBumper) {
+			climber.setPistons(false);
 		}
 		
 		//lift
 		lift.setPercentVoltage(OI.xlY);
 		
-		SmartDashboard.putNumber("left encoder", drivebase.getLeftEncoder());
-		SmartDashboard.putNumber("right encoder", drivebase.getRightEncoder());
-		
+				
 	}
 
 	@Override
 	public void robotPeriodic() {
 		SmartDashboard.putNumber("theta", navX.getYaw());
+		SmartDashboard.putNumber("lift encoder", lift.getEncoder());
+		SmartDashboard.putNumber("left encoder", drivebase.getLeftEncoder());
+		SmartDashboard.putNumber("right encoder", drivebase.getRightEncoder());
+
 		navX.collisionDetected();
 	}
 	
