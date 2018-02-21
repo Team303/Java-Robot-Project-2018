@@ -17,11 +17,11 @@ public class RobotMap {
 	public static final boolean MIDDLE_LEFT_INV = false;
 	public static final boolean MIDDLE_RIGHT_INV = false;
 	
-	public static final int CLIMBER_WINCH_ID = 40; 					//TODO
+	public static final int CLIMBER_WINCH_ID = 4;
 	public static final boolean CLIMBER_WINCH_INV = false;
 	public static final int CLIMBER_HOOK_DEPLOY_SOLENOID_ID = 2;
 	
-	public static final int LIFT_ID = 36; 							//TODO
+	public static final int LIFT_ID = 2;
 	public static final boolean LIFT_INV = false;
 	
 	public static final int INTAKE_LEFT_ID = 15;

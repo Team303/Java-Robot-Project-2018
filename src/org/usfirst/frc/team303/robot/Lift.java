@@ -6,20 +6,23 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 public class Lift {
 
+	//bottom to top is ~53000 ticks
 	TalonSRX lift;
+	TalonSRX liftEncoder;
 	public static final int kTimeoutMs = 1000;
 	int setpoint = 0;
 
 	//Stop range is the range above and below the setpoint where the robot should stop moving
 	//stopRange < outerRange
 		//When you are inside the outerRange, set the power to 0.4
-	int stopRange = 1000;
-	int outerRange = 3000;
+	int stopRange = 3000;
+	int outerRange = 10000;
 
 	public Lift() {
 		lift = new TalonSRX(RobotMap.LIFT_ID);
+		liftEncoder = new TalonSRX(RobotMap.MIDDLE_LEFT);
 		lift.setInverted(RobotMap.LIFT_INV);
-		Robot.drivebase.rightMiddle.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 1000);
+		liftEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 1000);
 	}
 	
 	public void setSetpoint(int setpoint) {
@@ -75,7 +78,7 @@ public class Lift {
 	}
 	
 	public int getEncoder() {
-		return Robot.drivebase.rightMiddle.getSelectedSensorPosition(0);
+		return liftEncoder.getSelectedSensorPosition(0);
 	}
 	
 	public void setPercentVoltage(double power) {

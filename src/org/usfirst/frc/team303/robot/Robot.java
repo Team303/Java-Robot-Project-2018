@@ -28,7 +28,7 @@ public class Robot extends IterativeRobot {
 	private static final String kCustomAuto = "My Auto";
 	
 	private int config;
-	private double wheelSpeed = 0.75;
+	private double wheelSpeed = -0.75;
 	private String message;
 
 	private String m_autoSelected;
@@ -213,16 +213,14 @@ public class Robot extends IterativeRobot {
 			intake.setRotation(false);
 		}
 		
-		//lift
-		lift.setPercentVoltage(OI.xlY);
-		
-		SmartDashboard.putNumber("left encoder", drivebase.getLeftEncoder());
-		SmartDashboard.putNumber("right encoder", drivebase.getRightEncoder());
-		
+		lift.autoControl();
 	}
 
 	@Override
 	public void robotPeriodic() {
+		SmartDashboard.putNumber("left encoder", drivebase.getLeftEncoder());
+		SmartDashboard.putNumber("right encoder", drivebase.getRightEncoder());
+		SmartDashboard.putNumber("lift encoder", lift.getEncoder());
 		SmartDashboard.putNumber("theta", navX.getYaw());
 		navX.collisionDetected();
 	}
