@@ -1,6 +1,5 @@
 package org.usfirst.frc.team303.robot.action;
 import jaci.pathfinder.Pathfinder;
-import jaci.pathfinder.Waypoint;
 import jaci.pathfinder.Trajectory;
 
 import org.usfirst.frc.team303.robot.Path;
@@ -32,7 +31,6 @@ public class ActionDriveByTrajectory implements Action {
 		double turn = -0.08*angleDifference;
 
 		Robot.drivebase.drive(l+turn, r-turn);
-		//SmartDashboard.putNumber("Segment");
 		SmartDashboard.putNumber("L", Robot.drivebase.getLeftEncoder());
 		SmartDashboard.putNumber("R", Robot.drivebase.getRightEncoder());
 		if(!path.testEncLeft.isFinished() && !path.testEncRight.isFinished()) {

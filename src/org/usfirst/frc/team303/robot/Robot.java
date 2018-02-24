@@ -7,9 +7,14 @@
 
 package org.usfirst.frc.team303.robot;
 
+import java.nio.channels.SelectableChannel;
+
+import org.w3c.dom.css.ElementCSSInlineStyle;
+
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.SensorBase;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -24,23 +29,19 @@ import jaci.pathfinder.Waypoint;
  * project.
  */
 @SuppressWarnings("deprecation")
-public class Robot extends IterativeRobot {
-	private static final String kDefaultAuto = "Default";
-	private static final String kCustomAuto = "My Auto";
-	
-	private int config;
-	private double wheelSpeed = -0.75;
-	private String message;
-
-	private String m_autoSelected;
-	private SendableChooser<String> m_chooser = new SendableChooser<>();
-	private String[][] autoList;
-	
-	private SendableChooser<String> positionChooser = new SendableChooser<>();
-	private SendableChooser<String> config1 = new SendableChooser<>();
-	private SendableChooser<String> config2 = new SendableChooser<>();
-	private SendableChooser<String> config3 = new SendableChooser<>();
-	private SendableChooser<String> config4 = new SendableChooser<>();
+public class Robot extends IterativeRobot {	
+	public static enum Position {LEFT, RIGHT, CENTER;}
+	public static enum Auto {DO_NOTHING, FORWARD, SCALE_TO_SWITCH, SWITCH_TO_SCALE, SWITCH;}
+	//	public static enum ConfigLL {DO_NOTHING, FORWARD, SCALE_TO_SWITCH, SWITCH_TO_SCALE, SWITCH;}
+	//	public static enum ConfigLR {DO_NOTHING, FORWARD, SCALE_TO_SWITCH, SWITCH_TO_SCALE, SWITCH;}
+	//	public static enum ConfigRR {DO_NOTHING, FORWARD, SCALE_TO_SWITCH, SWITCH_TO_SCALE, SWITCH;}
+	//	public static enum ConfigRL {DO_NOTHING, FORWARD, SCALE_TO_SWITCH, SWITCH_TO_SCALE, SWITCH;}	
+	private String gameMessage;
+	private SendableChooser<Position> positionChooser = new SendableChooser<>();
+	private SendableChooser<Auto> configRR = new SendableChooser<>();
+	private SendableChooser<Auto> configRL = new SendableChooser<>();
+	private SendableChooser<Auto> configLL = new SendableChooser<>();
+	private SendableChooser<Auto> configLR = new SendableChooser<>();
 
 	public static NavX navX;
 	public static Lift lift;
@@ -49,7 +50,7 @@ public class Robot extends IterativeRobot {
 	public static Intake intake;
 	public static Autonomous auto;
 	public static Compressor compressor;
-	
+	private double wheelSpeed = -0.75;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -57,11 +58,21 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-		
-		m_chooser.addDefault("Default Auto", kDefaultAuto);
-		m_chooser.addObject("My Auto", kCustomAuto);
-		SmartDashboard.putData("Auto choices", m_chooser);
-		
+		positionChooser.addObject("LEFT", Position.LEFT);
+		positionChooser.addObject("CENTER", Position.CENTER);
+		positionChooser.addObject("RIGHT", Position.RIGHT);
+
+		for(Auto auto : Auto.values()) {configRR.addObject(auto.toString(), auto);}
+		for(Auto auto : Auto.values()) {configRL.addObject(auto.toString(), auto);}
+		for(Auto auto : Auto.values()) {configLL.addObject(auto.toString(), auto);}
+		for(Auto auto : Auto.values()) {configLR.addObject(auto.toString(), auto);}
+
+		SmartDashboard.putData("Position", positionChooser);
+		SmartDashboard.putData("Config RR", configRR);
+		SmartDashboard.putData("Config RL", configRL);
+		SmartDashboard.putData("Config LL", configLL);
+		SmartDashboard.putData("Config LR", configLR);	
+
 		navX = new NavX();
 		lift = new Lift();
 		climber = new Climber();
@@ -69,42 +80,10 @@ public class Robot extends IterativeRobot {
 		drivebase = new Drivebase();
 		auto = new Autonomous();
 		compressor = new Compressor();
+
 		auto.initWaypoints();
-		
-		autoList = auto.getAutoList();
-		int configIndex = 1;
-		
-		config1.addDefault("Config 1", "Config 1");
-		config2.addDefault("Config 2", "Config 2");
-		config3.addDefault("Config 3", "Config 3");
-		config4.addDefault("Config 4", "Config 4");
-		
-		for (String[] config : autoList) {
-			for (String autoName : config) {
-				switch (configIndex) {
-					case 1:
-						config1.addObject(autoName, autoName);
-						break;
-					case 2:
-						config2.addObject(autoName, autoName);
-						break;
-					case 3:
-						config3.addObject(autoName, autoName);
-						break;
-					case 4:
-						config4.addObject(autoName, autoName);
-						break;
-				}
-			}
-			configIndex++;
-		}
-		
-		SmartDashboard.putData("Config 1", config1);
-		SmartDashboard.putData("Config 2", config2);
-		SmartDashboard.putData("Config 3", config3);
-		SmartDashboard.putData("Config 4", config4);	
 	}
-	
+
 	/**
 	 * This autonomous (along with the chooser code above) shows how to select
 	 * between different autonomous modes using the dashboard. The sendable
@@ -116,61 +95,98 @@ public class Robot extends IterativeRobot {
 	 * the switch structure below with additional strings. If using the
 	 * SendableChooser make sure to add them to the chooser code above as well.
 	 */
-	
-
 	@Override
 	public void autonomousInit() {
-		
-		//Message is three character string with first letter as switch and second as scale
-		message = DriverStation.getInstance().getGameSpecificMessage();
-		while(message.length()!=3) {
-			message = DriverStation.getInstance().getGameSpecificMessage();
-		}
-		
-		String switchStr = message.substring(0,1);
-		String scaleStr = message.substring(1,2);
+		auto.realizeTrajectories();
 
-		String selectedAuto = "";
-		
-		//Depending on the configuration, choose the configuration number 
-		if (switchStr.equals("R") && scaleStr.equals("L")) {
-			config = 1;
-			selectedAuto = config1.getSelected();
-		} else if (switchStr.equals("L") && scaleStr.equals("R")) {
-			config = 2;
-			selectedAuto = config2.getSelected();
-		} else if (switchStr.equals("R") && scaleStr.equals("R")) {
-			config = 3;
-			selectedAuto = config3.getSelected();
-		} else if (switchStr.equals("L") && scaleStr.equals("L")) {
-			config = 4;
-			selectedAuto = config4.getSelected();
-		} 
-		
-		String position = "";
-		String configStr = Integer.toString(config);
-		String positionSub = selectedAuto.substring(0,1);
-		
-		//Get the positions as they are in the auto drawings
-		switch (positionSub) {
-			case "L":
-				position = "1";
-				break;
-			case "C":
-				position = "2";
-				break;
-			case "R":
-				position = "3";
-				break;
+		//Message is three character string with first letter as switch and second as scale
+		gameMessage = DriverStation.getInstance().getGameSpecificMessage();
+		while(gameMessage.length()!=3) {
+			gameMessage = DriverStation.getInstance().getGameSpecificMessage();
 		}
-		
-		String autoNumStr = selectedAuto.substring(2, 3);	
-		String autoString = configStr + "-" + position + "-" + autoNumStr;
-		
-		auto.driveTrajectory(autoString);	
+		SmartDashboard.putString("game string", gameMessage);
+
+		Position position = positionChooser.getSelected();
+		if(position==Position.LEFT) {
+			assembleLeftAutoModes();
+		} else if(position==Position.CENTER) {
+			assembleCenterAutoModes();
+		} else if(position==Position.RIGHT) {
+			assembleRightAutoModes();
+		}
+
 	}
-	
-	
+
+	public void assembleLeftAutoModes() {
+		if(gameMessage.startsWith("LL")) {
+			Auto selected = configLL.getSelected();
+			if(selected==Auto.DO_NOTHING) {}
+			else if(selected==Auto.FORWARD) auto.assembleForward();
+			else if(selected==Auto.SCALE_TO_SWITCH) {}
+			else if(selected==Auto.SWITCH_TO_SCALE) {}
+		} else if(gameMessage.startsWith("LR")) {
+			Auto selected = configLR.getSelected();
+			if(selected==Auto.DO_NOTHING) {}
+			else if(selected==Auto.FORWARD) auto.assembleForward();
+			else if(selected==Auto.SCALE_TO_SWITCH) {}
+			else if(selected==Auto.SWITCH_TO_SCALE) {}
+		} else if(gameMessage.startsWith("RR")) {
+			Auto selected = configRR.getSelected();
+			if(selected==Auto.DO_NOTHING) {}
+			else if(selected==Auto.FORWARD) auto.assembleForward();
+			else if(selected==Auto.SCALE_TO_SWITCH) {}
+			else if(selected==Auto.SWITCH_TO_SCALE) {}
+		} else if(gameMessage.startsWith("RL")) {
+			Auto selected = configRL.getSelected();
+			if(selected==Auto.DO_NOTHING) {}
+			else if(selected==Auto.FORWARD) auto.assembleForward();
+			else if(selected==Auto.SCALE_TO_SWITCH) {}
+			else if(selected==Auto.SWITCH_TO_SCALE) {}
+		}
+	}
+
+	public void assembleRightAutoModes() {
+		if(gameMessage.startsWith("LL")) {
+			Auto selected = configLL.getSelected();
+			if(selected==Auto.DO_NOTHING) {}
+			else if(selected==Auto.FORWARD) auto.assembleForward();
+			else if(selected==Auto.SCALE_TO_SWITCH) {}
+			else if(selected==Auto.SWITCH_TO_SCALE) {}
+		} else if(gameMessage.startsWith("LR")) {
+			Auto selected = configLR.getSelected();
+			if(selected==Auto.DO_NOTHING) {}
+			else if(selected==Auto.FORWARD) auto.assembleForward();
+			else if(selected==Auto.SCALE_TO_SWITCH) {}
+			else if(selected==Auto.SWITCH_TO_SCALE) {}
+		} else if(gameMessage.startsWith("RR")) {
+			Auto selected = configRR.getSelected();
+			if(selected==Auto.DO_NOTHING) {}
+			else if(selected==Auto.FORWARD) auto.assembleForward();
+			else if(selected==Auto.SCALE_TO_SWITCH) {}
+			else if(selected==Auto.SWITCH_TO_SCALE) {}
+		} else if(gameMessage.startsWith("RL")) {
+			Auto selected = configRL.getSelected();
+			if(selected==Auto.DO_NOTHING) {}
+			else if(selected==Auto.FORWARD) auto.assembleForward();
+			else if(selected==Auto.SCALE_TO_SWITCH) {}
+			else if(selected==Auto.SWITCH_TO_SCALE) {}
+		}
+	}
+
+	public void assembleCenterAutoModes() {
+		if(gameMessage.startsWith("L")) {
+			Auto selected = configLL.getSelected();
+			Auto selected2 = configLR.getSelected();
+			if(selected==Auto.DO_NOTHING || selected2==Auto.DO_NOTHING) return;
+			else auto.assembleCenterSwitchLeft();
+		} else if(gameMessage.startsWith("R")) {
+			Auto selected = configRR.getSelected();
+			Auto selected2 = configRL.getSelected();
+			if(selected==Auto.DO_NOTHING || selected2==Auto.DO_NOTHING) return;
+			else auto.assembleCenterSwitchRight();
+		}
+	}
+
 	/**
 	 * This function is called periodically during autonomous.
 	 */
@@ -181,14 +197,14 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopInit() {}
-	
+
 	/**
 	 * This function is called periodically during operator control.
 	 */
 	@Override
 	public void teleopPeriodic() {
 		OI.update();
-	
+
 		//drivebase
 		drivebase.drive(OI.lY, OI.rY);
 
@@ -204,41 +220,41 @@ public class Robot extends IterativeRobot {
 		} else {
 			intake.setWheels(0, 0);
 		}
-		
+
 		//intake gripper
 		if(OI.xBtnX) {
 			intake.setGripper(true);
 		} else if(OI.xBtnB) {
 			intake.setGripper(false);
 		}
-		
+
 		//intake rotation
 		if(OI.xBtnY) {
 			intake.setRotation(false);
 		} else if(OI.xBtnA) {
 			intake.setRotation(true);
 		}
-		
+
 		//climber
 		if(OI.xLeftBumper) {
 			climber.setPistons(true);
 		} else if(OI.xRightBumper) {
 			climber.setPistons(false);
 		}
-		
+
 		if(Math.abs(OI.xrY)>0.1) {
 			climber.setWinch(OI.xrY);			
 		}
-		
-//		//lift
-//		if(OI.xPov==0) { //up
-//			lift.setSetpoint(30000);
-//		} else if(OI.xPov==180) { //down
-//			lift.setSetpoint(0);
-//		}
-		
+
+		//		//lift
+		//		if(OI.xPov==0) { //up
+		//			lift.setSetpoint(30000);
+		//		} else if(OI.xPov==180) { //down
+		//			lift.setSetpoint(0);
+		//		}
+
 		lift.setPercentVoltage(-OI.xlY);
-//		lift.autoControl();
+		//		lift.autoControl();
 	}
 
 	@Override
@@ -250,7 +266,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putBoolean("compressor on", compressor.enabled());
 		navX.collisionDetected();
 	}
-	
+
 	/**
 	 * This function is called periodically during test mode.
 	 */
