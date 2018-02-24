@@ -6,18 +6,23 @@ public class ActionWait implements Action {
 	
 	private int time;
 	Timer timer = new Timer();
+	boolean firstRun = true;
+	
 	
 	public ActionWait() {
 		this(9999999);
 	}
 	
+	/**
+	 * @param time in seconds
+	 */
 	public ActionWait(int time) {
-		//Start timer
 		this.time = time;
-		timer.start();
 	}
 
-	public void run() {}	
+	public void run() {
+		if(firstRun) timer.start();
+	}	
 	
 	public boolean isFinished() {
 		return timer.get() >= time;

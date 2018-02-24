@@ -5,10 +5,6 @@ import org.usfirst.frc.team303.robot.Robot;
 public class ActionIntakeGrip implements Action {
 	private boolean grip;
 
-	public ActionIntakeGrip() {
-		this(true);
-	}
-
 	public ActionIntakeGrip(boolean grip) {
 		this.grip = grip;
 	}

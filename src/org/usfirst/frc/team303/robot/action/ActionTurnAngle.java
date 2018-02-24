@@ -2,26 +2,15 @@ package org.usfirst.frc.team303.robot.action;
 import org.usfirst.frc.team303.robot.Robot;
 
 public class ActionTurnAngle implements Action{
-
-
+	
 	private double angle;
 	private double power;
 	private boolean firstRun;
 
-	public ActionTurnAngle() {
-		this(90);
-	}
-
-	public ActionTurnAngle(double angle) {
-		this(angle, 0.5);
-	}
-
 	public ActionTurnAngle(double angle, double power) {
-		//set instance variables with this
 		this.angle = angle;
 		this.power = power;
 	}
-
 
 	public void run() {
 		if(!firstRun) {
@@ -32,7 +21,6 @@ public class ActionTurnAngle implements Action{
 		//Turn left by default
 		//If you want to turn right, negate the power
 		Robot.drivebase.drive(-power, power);
-
 	}
 
 	public boolean isFinished(){

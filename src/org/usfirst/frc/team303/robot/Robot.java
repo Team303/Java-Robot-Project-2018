@@ -123,7 +123,7 @@ public class Robot extends IterativeRobot {
 		
 		//Message is three character string with first letter as switch and second as scale
 		message = DriverStation.getInstance().getGameSpecificMessage();
-		while(message.length()>0) {
+		while(message.length()!=3) {
 			message = DriverStation.getInstance().getGameSpecificMessage();
 		}
 		

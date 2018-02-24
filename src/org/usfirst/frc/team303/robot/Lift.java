@@ -14,9 +14,9 @@ public class Lift {
 	public static final int kTimeoutMs = 1000;
 	int setpoint = 0;
 
-	final static int STOP_RANGE = 2000;
-	final static int OUTER_RANGE = 10000;
-	final static int OUTER_RANGE_2 = 20000;
+	final static int STOP_RANGE = 2000; //stop when <= 2000 ticks away from setpoint
+	final static int INNER_RANGE = 10000; //use partial power when between OUTER_RANGE and INNER_RANGE ticks away from setpoint
+	final static int OUTER_RANGE = 20000; //use full power when >OUTER_RANGE ticks away from setpoint 
 	
 	public Lift() {
 		lift = new TalonSRX(RobotMap.LIFT_ID);
@@ -36,13 +36,13 @@ public class Lift {
 		double power = 0;
 		
 		if(setpoint==0) {
-			setPercentVoltage(-0.5);
+			setPercentVoltage(-0.5); //https://www.youtube.com/watch?v=VsH0cngmLQM
 			return;
 		}
 		
-		if(error>=OUTER_RANGE_2) power = 1;
-		else if(error>=OUTER_RANGE) power = 0.8;
-		else if(error>=STOP_RANGE) power = 0.6;
+		if(error>OUTER_RANGE) power = 1;
+		else if(error>INNER_RANGE) power = 0.8;
+		else if(error>STOP_RANGE) power = 0.6;
 		
 		if(encoderPosition>setpoint) {
 			setPercentVoltage(-power);
@@ -50,6 +50,10 @@ public class Lift {
 			setPercentVoltage(power);
 		}
 		
+	}
+	
+	public int getSetpoint() {
+		return setpoint;
 	}
 	
 	public int getEncoder() {

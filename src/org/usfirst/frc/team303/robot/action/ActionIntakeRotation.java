@@ -5,12 +5,8 @@ import org.usfirst.frc.team303.robot.Robot;
 public class ActionIntakeRotation implements Action {
 	private boolean rotation;
 
-	public ActionIntakeRotation() {
-		this(true);
-	}
-
 	public ActionIntakeRotation(boolean grip) {
-		this.rotation = rotation;
+		this.rotation = grip;
 	}
 
 	public void run() {

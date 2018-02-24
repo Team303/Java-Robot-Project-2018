@@ -19,12 +19,20 @@ public class Autonomous {
 	public Trajectory[] trajectoryArray;
 	NetworkTable pathfinderInputTable;
 	HashMap<String, Waypoint[]> wayMap = new HashMap<String, Waypoint[]>();
+	HashMap<String, Trajectory> trajectoryMap = new HashMap<String, Trajectory>();
+
 	
 	public Autonomous() {
 		pathfinderInputTable = NetworkTable.getTable("pathfinderInput");
 	}
 
-
+	/**
+	 * please
+	 */
+	public void realizeTrajectories() {
+		trajectoryMap = Path.deserializeTrajectoryMap(pathfinderOutputTable.getString("path", null));
+	}
+	
 	public void add(Action action) {
 		actionList.add(action);
 	}
@@ -39,10 +47,8 @@ public class Autonomous {
 		}
 	}
 
-
 	public void driveTrajectory(String trajectoryName){ //TODO change auto name to match trajectory goal
-		HashMap<String, Trajectory> map = (HashMap<String, Trajectory>) Path.deserializeTrajectoryMap(pathfinderOutputTable.getString("path", null));
-		Trajectory trajectory = (Trajectory) map.get(trajectoryName);
+		Trajectory trajectory = (Trajectory) trajectoryMap.get(trajectoryName);
 		add(new ActionDriveByTrajectory(trajectory));
 	}
 		
@@ -67,8 +73,6 @@ public class Autonomous {
 		
 		wayMap.put("2-3-1", waypointArr);
 		wayMap.put("3-3-1", waypointArr2);
-	
-
 		
 		pathfinderInputTable.putString("waypoints", Path.serializeWaypointMap(wayMap));
 	}

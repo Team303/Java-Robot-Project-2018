@@ -12,15 +12,6 @@ public class ActionDriveStraightByEncoders implements Action {
 	public boolean firstRun = false;
 	Timer timer = new Timer();
 
-	public ActionDriveStraightByEncoders() {
-		//default distance of 10000 ticks
-		this(10000);
-	}
-
-	public ActionDriveStraightByEncoders(int distance) {
-		this(distance, 0.5);
-	}
-
 	public ActionDriveStraightByEncoders(int distance, double power) {
 		this(distance, power, 15);
 	}

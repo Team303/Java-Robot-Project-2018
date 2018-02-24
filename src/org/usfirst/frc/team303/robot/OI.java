@@ -17,6 +17,8 @@ public class OI {
 	static double rX = 0, rY = 0, rZ = 0;
 	static double xlX = 0, xlY = 0, xrX = 0, xrY = 0;
 	static double xLeftTrigger=0, xRightTrigger=0;
+	
+	static int xPov = 0;
 	static int lPov = 0;
 	
 	static boolean[] lBtn = new boolean[9];
@@ -61,6 +63,8 @@ public class OI {
 		xRightStickBtn = xbox.getStickButton(Hand.kRight);
 		xLeftTrigger = xbox.getTriggerAxis(Hand.kLeft);
 		xRightTrigger = xbox.getTriggerAxis(Hand.kRight);
+		
+		xPov = xbox.getPOV();
 	}
 	
 	public static boolean pulse(boolean input){

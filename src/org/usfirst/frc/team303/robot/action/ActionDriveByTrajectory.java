@@ -19,7 +19,10 @@ public class ActionDriveByTrajectory implements Action {
 	}
 
 	public void run() {
-		if(firstRun) Robot.drivebase.zeroEncoder(); 
+		if(firstRun) {
+			Robot.drivebase.zeroEncoder();
+			Robot.navX.zeroYaw();
+		}
 
 		l = path.testEncLeft.calculate(Robot.drivebase.getLeftEncoder());
 		r = path.testEncRight.calculate(Robot.drivebase.getRightEncoder());
@@ -33,13 +36,13 @@ public class ActionDriveByTrajectory implements Action {
 		SmartDashboard.putNumber("L", Robot.drivebase.getLeftEncoder());
 		SmartDashboard.putNumber("R", Robot.drivebase.getRightEncoder());
 		if(!path.testEncLeft.isFinished() && !path.testEncRight.isFinished()) {
-			SmartDashboard.putNumber("L Heading", path.testEncLeft.getHeading());
-			SmartDashboard.putNumber("R Heading", path.testEncRight.getHeading());
-			SmartDashboard.putNumber("Lx", path.testEncLeft.getSegment().x);
-			SmartDashboard.putNumber("Rx", path.testEncRight.getSegment().x);
-			SmartDashboard.putNumber("Ly", path.testEncLeft.getSegment().y);
-			SmartDashboard.putNumber("Ry", path.testEncRight.getSegment().y);
-			SmartDashboard.putBoolean("Heading = navX?", Math.abs(Pathfinder.r2d(path.testEncLeft.getHeading()) - Robot.navX.getYaw()) <= 2.0);
+			SmartDashboard.putNumber("Theoretical L Heading", path.testEncLeft.getHeading());
+			SmartDashboard.putNumber("Theoretical R Heading", path.testEncRight.getHeading());
+			SmartDashboard.putNumber("Theoretical Lx", path.testEncLeft.getSegment().x);
+			SmartDashboard.putNumber("Theoretical Rx", path.testEncRight.getSegment().x);
+			SmartDashboard.putNumber("Theoretical Ly", path.testEncLeft.getSegment().y);
+			SmartDashboard.putNumber("Theoretical Ry", path.testEncRight.getSegment().y);
+			SmartDashboard.putBoolean("Theoretical heading = robot heading?", Math.abs(Pathfinder.r2d(path.testEncLeft.getHeading()) - Robot.navX.getYaw()) <= 2.0);
 		}
 		firstRun = false;
 	}
