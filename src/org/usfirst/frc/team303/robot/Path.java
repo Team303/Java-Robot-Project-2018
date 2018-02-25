@@ -31,11 +31,11 @@ public class Path {
 	//done in feet for now
 	//watch out for a table right about there
 
-	double p = 1;
+	double p = 0.0000001;
 	double i = 0;
-	double d = 0.08;
+	double d = 0;
 	double velocityRatio = 1/maxVel;
-	double accelGain = 0.06;
+	double accelGain = 0.1;
 
 	// The first argument is the proportional gain. Usually this will be quite high
 	// The second argument is the integral gain. This is unused for motion profiling

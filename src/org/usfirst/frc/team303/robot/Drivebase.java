@@ -29,9 +29,11 @@ public class Drivebase {
 		rightFront.setInverted(RobotMap.FRONT_RIGHT_INV);
 		leftBack.setInverted(RobotMap.REAR_LEFT_INV);
 		leftFront.setInverted(RobotMap.FRONT_LEFT_INV);
-
+		
 		rightBack.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 1000);
 		leftFront.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 1000);
+		zeroEncoder();
+		Robot.navX.zeroYaw();
 	}
 
 	public void drive(double left, double right) {
@@ -44,7 +46,7 @@ public class Drivebase {
 	}
 
 	public int getLeftEncoder() {
-		return leftFront.getSelectedSensorPosition(0);
+		return -leftFront.getSelectedSensorPosition(0);
 	}
 
 	public int getRightEncoder() {

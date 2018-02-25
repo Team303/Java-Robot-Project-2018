@@ -12,10 +12,10 @@ public class ActionLift implements Action {
 
 	public void run() {
 		if(firstRun) {
-			Robot.lift.setSetpoint(setpoint);
+			//Robot.lift.setSetpoint(setpoint);
 			firstRun = false;
 		}
-		Robot.lift.autoControl();
+		//Robot.lift.autoControl();
 	}
 
 	/**
@@ -23,7 +23,8 @@ public class ActionLift implements Action {
 	 */
 	@Deprecated
 	public boolean isFinished() {
-		return Math.abs(setpoint-Robot.lift.getEncoder())<1000;
+		return true;
+		//return Math.abs(setpoint-Robot.lift.getEncoder())<1000;
 	}
 
 

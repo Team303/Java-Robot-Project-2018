@@ -18,11 +18,11 @@ public class Autonomous {
 
 	NetworkTable pathfinderOutputTable = NetworkTable.getTable("pathfinderOutput");		
 	NetworkTable pathfinderInputTable = NetworkTable.getTable("pathfinderInput");
-	private ArrayList<Action> arr = new ArrayList<>();
+	public ArrayList<Action> arr = new ArrayList<>();
 	private int taskNum = 0;
 	public Trajectory[] trajectoryArray;
 	HashMap<String, Waypoint[]> wayMap = new HashMap<String, Waypoint[]>();
-	HashMap<String, Trajectory> trajectoryMap = new HashMap<String, Trajectory>();
+	HashMap<String, Trajectory> trajectoryMap = null;
 
 	/**
 	 * please
@@ -43,6 +43,9 @@ public class Autonomous {
 	}
 
 	public ActionDriveByTrajectory getTrajectory(String trajectoryName) {
+		if(trajectoryMap==null) {
+			realizeTrajectories();
+		}
 		return new ActionDriveByTrajectory(trajectoryMap.get(trajectoryName));
 	}
 		
@@ -53,9 +56,12 @@ public class Autonomous {
 		pathfinderInputTable.putNumber("maxAccel", Path.maxAccel);
 		pathfinderInputTable.putNumber("maxJerk", Path.maxJerk);
 		
+		try {Thread.sleep(250);} catch (Exception e) {e.printStackTrace();}
+		
 		Waypoint[] forward = new Waypoint[] {
 				new Waypoint(0, 0, 0),
-				new Waypoint(20, 0, Pathfinder.d2r(0)),
+				//new Waypoint(15, 0, Pathfinder.d2r(0)),
+				new Waypoint(5, 10, Pathfinder.d2r(90)),
 		};
 		Waypoint[] centerLeftSwitch = new Waypoint[] {
 				new Waypoint(0, 0, 0),

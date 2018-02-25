@@ -28,9 +28,9 @@ public class ActionDriveByTrajectory implements Action {
 		double theta = Robot.navX.getYaw();
 		double desiredHeading = Pathfinder.r2d(path.testEncLeft.getHeading());
 		double angleDifference = Pathfinder.boundHalfDegrees(desiredHeading-theta);
-		double turn = -0.08*angleDifference;
+		double turn = 0.01*angleDifference;
 
-		Robot.drivebase.drive(l+turn, r-turn);
+		Robot.drivebase.drive(-(l+turn), -(r-turn));
 		SmartDashboard.putNumber("L", Robot.drivebase.getLeftEncoder());
 		SmartDashboard.putNumber("R", Robot.drivebase.getRightEncoder());
 		if(!path.testEncLeft.isFinished() && !path.testEncRight.isFinished()) {
