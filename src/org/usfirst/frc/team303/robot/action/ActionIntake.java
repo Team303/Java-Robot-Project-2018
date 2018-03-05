@@ -14,7 +14,7 @@ public class ActionIntake implements Action {
 	}
 
 	public void run() {
-		Robot.intake.setWheels(left, right);
+		//Robot.intake.setWheels(left, right);
 	}
 
 	public boolean isFinished() {

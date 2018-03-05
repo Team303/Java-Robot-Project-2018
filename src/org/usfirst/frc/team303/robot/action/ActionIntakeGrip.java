@@ -10,7 +10,7 @@ public class ActionIntakeGrip implements Action {
 	}
 
 	public void run() {
-		Robot.intake.setGripper(grip);
+		//Robot.intake.setGripper(grip);
 	}
 
 	public boolean isFinished() {

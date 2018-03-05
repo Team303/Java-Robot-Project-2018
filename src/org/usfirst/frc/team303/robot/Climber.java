@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 
 public class Climber {
 
-	TalonSRX winch;
+	public TalonSRX winch;
 	Solenoid hookDeploy;
 	
 	public Climber(){
