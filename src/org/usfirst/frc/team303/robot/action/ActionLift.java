@@ -15,7 +15,7 @@ public class ActionLift implements Action {
 			Robot.lift.setSetpoint(setpoint);
 			firstRun = false;
 		}
-		Robot.lift.proportionalControl();
+		Robot.lift.control();
 	}
 
 	public boolean isFinished() {

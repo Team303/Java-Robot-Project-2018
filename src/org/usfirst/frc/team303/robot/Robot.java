@@ -271,7 +271,7 @@ public class Robot extends IterativeRobot {
 			lift.setSetpoint(27000);
 		}
 
-		lift.proportionalControl();
+		lift.control();
 
 		if(OI.xlY>0.5) {
 			lift.setSetpoint(lift.getSetpoint()-400);
