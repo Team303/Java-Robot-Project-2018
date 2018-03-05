@@ -12,16 +12,12 @@ public class ActionLift implements Action {
 
 	public void run() {
 		if(firstRun) {
-			//Robot.lift.setSetpoint(setpoint);
+			Robot.lift.setSetpoint(setpoint);
 			firstRun = false;
 		}
-		//Robot.lift.autoControl();
+		Robot.lift.proportionalControl();
 	}
 
-	/**
-	 * <b>Stop!</b><br><br>Most of the time you should use lift as a non-conditional action. Do you know what you're doing?
-	 */
-	@Deprecated
 	public boolean isFinished() {
 		return true;
 		//return Math.abs(setpoint-Robot.lift.getEncoder())<1000;

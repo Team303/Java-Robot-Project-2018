@@ -9,35 +9,30 @@ public class ActionDriveStraightByEncoders implements Action {
 	public int distance = 0;
 	public double power = 0;
 	public double timeout = 0;
-	public boolean firstRun = false;
+	public boolean firstRun = true;
 	Timer timer = new Timer();
-
+	public double initalYaw = 0;
+	
 	public ActionDriveStraightByEncoders(int distance, double power) {
 		this(distance, power, 15);
 	}
 
 	public ActionDriveStraightByEncoders(int distance, double power, double timeout) {
-		//4096 ticks for one rotation
 		this.distance = distance;
-		//0 to 1 range
 		this.power = power;
-		//time in seconds
-		this.timeout = timeout;
+		this.timeout = timeout; //in seconds
 	}
 
 	public void run() {
-		if (!firstRun) {
-			//Zero Encoder and Zero Yaw and start time ON THE FIRST RUN
-			//And set firstRun to true so this is not called again
-			Robot.drivebase.zeroEncoder();
-			Robot.navX.zeroYaw();
+		if (firstRun) {
+			initalYaw = Robot.navX.getYaw();
 			timer.start();
-			firstRun = true;
+			firstRun = false;
 		}
 
 		//call drive straight - returns a double array with first index as left POWER, and second index as right POWER
 		//driveStraight(power, angle difference, tuning constant)
-		double[] pow = Action.driveStraight(power, Robot.navX.getYaw(), 0.01);
+		double[] pow = Action.driveStraight(-power, Robot.navX.getYaw()-initalYaw, 0.01);
 		Robot.drivebase.drive(pow[0], pow[1]);		
 	}
 
@@ -45,6 +40,7 @@ public class ActionDriveStraightByEncoders implements Action {
 	public boolean isFinished() {
 		//Return true if the current encoder value is more or equal to the distance
 		//OR return true if the time is more or equal to the timeout
+		if(timer.get()>=timeout) timer.stop();
 		return (Robot.drivebase.getLeftEncoder() >= distance) || (timer.get() >= timeout);
 	}
 

@@ -9,9 +9,11 @@ package org.usfirst.frc.team303.robot;
 
 import org.usfirst.frc.team303.robot.action.ActionWait;
 
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -24,7 +26,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends IterativeRobot {	
 	public static enum Position {LEFT, RIGHT, CENTER;}
-	public static enum Auto {DO_NOTHING, FORWARD, SCALE_TO_SWITCH, SWITCH_TO_SCALE, SWITCH, SCALE;}
+	public static enum Auto {DO_NOTHING, FORWARD, SCALE_AND_SWITCH, EXCHANGE, SWITCH, SCALE;}
 	private String gameMessage;
 	private SendableChooser<Position> positionChooser = new SendableChooser<>();
 	private SendableChooser<Auto> configRR = new SendableChooser<>();
@@ -33,13 +35,13 @@ public class Robot extends IterativeRobot {
 	private SendableChooser<Auto> configLR = new SendableChooser<>();
 
 	public static NavX navX;
-	//public static Lift lift;
-	//public static Climber climber;
+	public static Lift lift;
+	public static Climber climber;
 	public static Drivebase drivebase;
-	//public static Intake intake;
+	public static Intake intake;
 	public static Autonomous auto;
-	//public static Compressor compressor;
-	//private double wheelSpeed = -0.75;
+	public static Compressor compressor;
+	private double wheelSpeed = -0.6;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -65,14 +67,16 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Config LR", configLR);	
 
 		navX = new NavX();
-		//lift = new Lift();
-		//climber = new Climber();
-		//intake = new Intake();
+		intake = new Intake();
 		drivebase = new Drivebase();
+		climber = new Climber();
+		lift = new Lift();
 		auto = new Autonomous();
-		//compressor = new Compressor();
+		compressor = new Compressor();
 
 		auto.initWaypoints();
+	
+		CameraServer.getInstance().startAutomaticCapture();
 	}
 
 	/**
@@ -114,32 +118,32 @@ public class Robot extends IterativeRobot {
 			Auto selected = configLL.getSelected();
 			if(selected==Auto.DO_NOTHING) {}
 			else if(selected==Auto.FORWARD) auto.assembleForward();
-			else if(selected==Auto.SCALE_TO_SWITCH) {}
-			else if(selected==Auto.SWITCH_TO_SCALE) {}
+			else if(selected==Auto.SCALE_AND_SWITCH) {}
+			else if(selected==Auto.EXCHANGE) {}
 			else if(selected==Auto.SWITCH) {}
 			else if(selected==Auto.SCALE) {}
 		} else if(gameMessage.startsWith("LR")) {
 			Auto selected = configLR.getSelected();
 			if(selected==Auto.DO_NOTHING) {}
 			else if(selected==Auto.FORWARD) auto.assembleForward();
-			else if(selected==Auto.SCALE_TO_SWITCH) {}
-			else if(selected==Auto.SWITCH_TO_SCALE) {}
+			else if(selected==Auto.SCALE_AND_SWITCH) {}
+			else if(selected==Auto.EXCHANGE) {}
 			else if(selected==Auto.SWITCH) {}
 			else if(selected==Auto.SCALE) {}
 		} else if(gameMessage.startsWith("RR")) {
 			Auto selected = configRR.getSelected();
 			if(selected==Auto.DO_NOTHING) {}
 			else if(selected==Auto.FORWARD) auto.assembleForward();
-			else if(selected==Auto.SCALE_TO_SWITCH) {}
-			else if(selected==Auto.SWITCH_TO_SCALE) {}
+			else if(selected==Auto.SCALE_AND_SWITCH) {}
+			else if(selected==Auto.EXCHANGE) {}
 			else if(selected==Auto.SWITCH) {}
 			else if(selected==Auto.SCALE) {}
 		} else if(gameMessage.startsWith("RL")) {
 			Auto selected = configRL.getSelected();
 			if(selected==Auto.DO_NOTHING) {}
 			else if(selected==Auto.FORWARD) auto.assembleForward();
-			else if(selected==Auto.SCALE_TO_SWITCH) {}
-			else if(selected==Auto.SWITCH_TO_SCALE) {}
+			else if(selected==Auto.SCALE_AND_SWITCH) {}
+			else if(selected==Auto.EXCHANGE) {}
 			else if(selected==Auto.SWITCH) {}
 			else if(selected==Auto.SCALE) {}
 		}
@@ -150,32 +154,32 @@ public class Robot extends IterativeRobot {
 			Auto selected = configLL.getSelected();
 			if(selected==Auto.DO_NOTHING) {}
 			else if(selected==Auto.FORWARD) auto.assembleForward();
-			else if(selected==Auto.SCALE_TO_SWITCH) {}
-			else if(selected==Auto.SWITCH_TO_SCALE) {}
+			else if(selected==Auto.SCALE_AND_SWITCH) {}
+			else if(selected==Auto.EXCHANGE) {}
 			else if(selected==Auto.SWITCH) {}
 			else if(selected==Auto.SCALE) {}
 		} else if(gameMessage.startsWith("LR")) {
 			Auto selected = configLR.getSelected();
 			if(selected==Auto.DO_NOTHING) {}
 			else if(selected==Auto.FORWARD) auto.assembleForward();
-			else if(selected==Auto.SCALE_TO_SWITCH) {}
-			else if(selected==Auto.SWITCH_TO_SCALE) {}
+			else if(selected==Auto.SCALE_AND_SWITCH) {}
+			else if(selected==Auto.EXCHANGE) {}
 			else if(selected==Auto.SWITCH) {}
 			else if(selected==Auto.SCALE) {}
 		} else if(gameMessage.startsWith("RR")) {
 			Auto selected = configRR.getSelected();
 			if(selected==Auto.DO_NOTHING) {}
 			else if(selected==Auto.FORWARD) auto.assembleForward();
-			else if(selected==Auto.SCALE_TO_SWITCH) {}
-			else if(selected==Auto.SWITCH_TO_SCALE) {}
+			else if(selected==Auto.SCALE_AND_SWITCH) {auto.assembleRightRightSwitchRightScale();}
+			else if(selected==Auto.EXCHANGE) {} //this should do nothing
 			else if(selected==Auto.SWITCH) {}
 			else if(selected==Auto.SCALE) {}
 		} else if(gameMessage.startsWith("RL")) {
 			Auto selected = configRL.getSelected();
 			if(selected==Auto.DO_NOTHING) {}
 			else if(selected==Auto.FORWARD) auto.assembleForward();
-			else if(selected==Auto.SCALE_TO_SWITCH) {}
-			else if(selected==Auto.SWITCH_TO_SCALE) {}
+			else if(selected==Auto.SCALE_AND_SWITCH) {}
+			else if(selected==Auto.EXCHANGE) {}
 			else if(selected==Auto.SWITCH) {}
 			else if(selected==Auto.SCALE) {}
 		}
@@ -211,68 +215,86 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		OI.update();
-
 		//drivebase
 		drivebase.drive(OI.lY, OI.rY);
 
 		//intake wheels
-//		if(OI.lBtn[2]) { //in
-//			intake.setWheels(-wheelSpeed, wheelSpeed);
-//		} else if(OI.lPov==0) { //out
-//			intake.setWheels(wheelSpeed, -wheelSpeed);
-//		} else if(OI.lBtn[5]) { //left
-//			intake.setWheels(wheelSpeed, wheelSpeed);
-//		} else if(OI.lBtn[6]) { //right
-//			intake.setWheels(-wheelSpeed, -wheelSpeed);
-//		} else {
-//			intake.setWheels(0, 0);
-//		}
-//
-//		//intake gripper
-//		if(OI.xBtnX) {
-//			intake.setGripper(true);
-//		} else if(OI.xBtnB) {
-//			intake.setGripper(false);
-//		}
-//
-//		//intake rotation
-//		if(OI.xBtnY) {
-//			intake.setRotation(false);
-//		} else if(OI.xBtnA) {
-//			intake.setRotation(true);
-//		}
-//
-//		//climber
-//		if(OI.xLeftBumper) {
-//			climber.setPistons(true);
-//		} else if(OI.xRightBumper) {
-//			climber.setPistons(false);
-//		}
-//
-//		if(Math.abs(OI.xrY)>0.1) {
-//			climber.setWinch(OI.xrY);			
-//		}
+		if(OI.lBtn[1]) { //in
+			intake.setWheels(-wheelSpeed, wheelSpeed);
+		} else if(OI.lBtn[2]) { //out
+			intake.setWheels(wheelSpeed, -wheelSpeed);
+		} else if(OI.lBtn[5]) { //left
+			intake.setWheels(wheelSpeed, wheelSpeed);
+		} else if(OI.lBtn[6]) { //right
+			intake.setWheels(-wheelSpeed, -wheelSpeed);
+		} else {
+			intake.setWheels(0, 0);
+		}
 
-		//		//lift
-		//		if(OI.xPov==0) { //up
-		//			lift.setSetpoint(30000);
-		//		} else if(OI.xPov==180) { //down
-		//			lift.setSetpoint(0);
-		//		}
+		//intake gripper
+		if(OI.rBtn[1]) {
+			intake.setGripper(true);
+		} else if(OI.rBtn[2]) {
+			intake.setGripper(false);
+		}
 
-//		lift.setPercentVoltage(-OI.xlY);
-		//		lift.autoControl();
+		//intake rotation
+		if(OI.xBtnY) {
+			intake.setRotation(false);
+		} else if(OI.xBtnA) {
+			intake.setRotation(true);
+		}
+
+		//climber
+		if(OI.xLeftBumper) {
+			climber.setPistons(true);
+		} else if(OI.xRightBumper) {
+			climber.setPistons(false);
+		}
+
+		if(Math.abs(OI.xrY)>0.5) {
+			climber.setWinch(-OI.xrY);			
+		} else {
+			climber.setWinch(0);
+		}
+		SmartDashboard.putNumber("climber winch power", climber.winch.getMotorOutputPercent());
+		
+
+		//lift
+		if(OI.xPov==0) { //up
+			lift.setSetpoint(67000);
+		} else if(OI.xPov==180) { //down
+			lift.setSetpoint(0);
+		} else if(OI.xPov==90) { //right
+			lift.setSetpoint(10000);
+		} else if(OI.xPov==270) { //left
+			lift.setSetpoint(27000);
+		}
+
+		lift.proportionalControl();
+
+		if(OI.xlY>0.5) {
+			lift.setSetpoint(lift.getSetpoint()-400);
+		} else if(OI.xlY<-0.5){
+			lift.setSetpoint(lift.getSetpoint()+400);			
+		}
+		
 	}
 
 	@Override
 	public void robotPeriodic() {
+		OI.update();
 		SmartDashboard.putNumber("left encoder", drivebase.getLeftEncoder());
 		SmartDashboard.putNumber("right encoder", drivebase.getRightEncoder());
-//		SmartDashboard.putNumber("lift encoder", lift.getEncoder());
+		SmartDashboard.putNumber("lift encoder", lift.getEncoder());
 		SmartDashboard.putNumber("theta", navX.getYaw());
-//		SmartDashboard.putBoolean("compressor on", compressor.enabled());
+		SmartDashboard.putBoolean("compressor on", compressor.enabled());
 		navX.collisionDetected();
+
+		if(OI.lZ<0.5) {
+			drivebase.zeroEncoder();
+			navX.zeroYaw();
+		}
 	}
 
 	/**

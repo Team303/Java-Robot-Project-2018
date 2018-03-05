@@ -6,13 +6,15 @@ import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class Lift {
 
-	//bottom to top is ~53000 ticks
+	//bottom to top is ~65000 ticks
 	TalonSRX lift;
-	TalonSRX liftEncoder;
 	public static final int kTimeoutMs = 1000;
 	int setpoint = 0;
+	//double kP = 0.00002;
 
 	final static int STOP_RANGE = 2000; //stop when <= 2000 ticks away from setpoint
 	final static int INNER_RANGE = 10000; //use partial power when between OUTER_RANGE and INNER_RANGE ticks away from setpoint
@@ -20,23 +22,42 @@ public class Lift {
 	
 	public Lift() {
 		lift = new TalonSRX(RobotMap.LIFT_ID);
-		liftEncoder = new TalonSRX(RobotMap.MIDDLE_LEFT);
 		lift.setInverted(RobotMap.LIFT_INV);
-		liftEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 1000);
+		Robot.climber.winch.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 1000);
+		Robot.climber.winch.setSelectedSensorPosition(0, 0, 1000);
+		
 	}
 	
 	public void setSetpoint(int setpoint) {
-		this.setpoint = setpoint; 
+		if(setpoint<72000 && setpoint>-1) {
+			this.setpoint = setpoint; 			
+		}
 	}
 	
-	//depending on how this works we may just want to replace with a p loop
+	public void proportionalControl() {
+		int error = setpoint-getEncoder();
+		double power;
+		if(error>0) {
+			power = Math.abs(Math.pow(error/32500.0, 0.23));
+		} else {
+			power = (error/65000.0);
+			power = Math.max(-0.5, power);  //https://www.youtube.com/watch?v=VsH0cngmLQM
+		}
+		
+		setPercentVoltage(power);
+		SmartDashboard.putNumber("lift error", error);
+		SmartDashboard.putNumber("lift power", power);
+		SmartDashboard.putNumber("lift setpoint", setpoint);
+	}
+	
+	@Deprecated
 	public void autoControl() {
 		int encoderPosition = getEncoder();
-		int error = Math.abs(setpoint-getEncoder());
+		int error = Math.abs(setpoint-encoderPosition);
 		double power = 0;
 		
 		if(setpoint==0) {
-			setPercentVoltage(-0.5); //https://www.youtube.com/watch?v=VsH0cngmLQM
+			setPercentVoltage(-0.5);
 			return;
 		}
 		
@@ -57,7 +78,7 @@ public class Lift {
 	}
 	
 	public int getEncoder() {
-		return liftEncoder.getSelectedSensorPosition(0);
+		return Robot.climber.winch.getSelectedSensorPosition(0);
 	}
 	
 	public void setPercentVoltage(double power) {
