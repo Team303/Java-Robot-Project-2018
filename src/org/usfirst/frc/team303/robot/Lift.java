@@ -14,18 +14,20 @@ public class Lift {
 	int setpoint = 0;
 	double iAcc = 0.0;
 	double maxIAcc = 0.3;
-	public static final double kI = 0.000000000000001; //TODO
+	public static final double kI = 0.000000000000000001; //TODO
 
 	public Lift() {
 		lift = new TalonSRX(RobotMap.LIFT_ID);
 		lift.setInverted(RobotMap.LIFT_INV);
 		Robot.climber.winch.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 1000);
+		Robot.climber.winch.configForwardSoftLimitThreshold(80000, 1000);
+		Robot.climber.winch.configForwardSoftLimitEnable(true, 1000);
 		Robot.climber.winch.setSelectedSensorPosition(0, 0, 1000);
 
 	}
 
 	public void setSetpoint(int setpoint) {
-		if(setpoint<70000 && setpoint>-1) {
+		if(setpoint<80000 && setpoint>-1) {
 			this.setpoint = setpoint; 			
 		}
 	}
@@ -34,21 +36,29 @@ public class Lift {
 		int error = setpoint-getEncoder();
 		double power;
 		
-		//kP
+		
+		//for the proportional term, we simply get the system error,
+		//run it through a function, and set it to the motor power.
 		if(error>0) {
-			power = Math.abs(Math.pow(error/32500.0, 0.2));
+			power = Math.pow(error/32500.0, 0.2);
 		} else {
-			power = (error/65000.0);
-			power = Math.max(-0.5, power);  //https://www.youtube.com/watch?v=VsH0cngmLQM
+			//if we are going down, the power can be linear, 
+			//since we want a smooth descent but don't want to unwind the winch too far
+			power = (error/65000.0);				
+			power = Math.max(-0.5, power); 
 		}
 		
-		//kI
-		if(onTarget()) {
-			iAcc = 0;
-		} else {
-			iAcc+=error*kI;			
-		}
-		power+=Math.copySign(Math.min(Math.abs(iAcc), maxIAcc), iAcc);
+		//For the integral term, we add extra motor power every execution
+		//we aren't at the setpoint. If we are there, don't do anything extra.
+		//if(onTarget()) {
+		//	iAcc = 0;
+		//	return;
+		//} else {
+		//	iAcc+=error*kI;			
+		//}
+		//we don't want the integral term to get too high, or we'll overshoot the setpoint.
+		//To fix this we limit I's maximum contribution.
+		//power+=Math.copySign(Math.min(Math.abs(iAcc), maxIAcc), iAcc);
 		
 		setPercentVoltage(power);
 		SmartDashboard.putNumber("lift error", error);
@@ -57,7 +67,7 @@ public class Lift {
 	}
 
 	public boolean onTarget() {
-		return Math.abs(setpoint-getEncoder())<1000;
+		return Math.abs(setpoint-getEncoder())<50;
 	}
 
 	public int getSetpoint() {

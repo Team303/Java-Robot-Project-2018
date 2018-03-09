@@ -26,19 +26,19 @@ import jaci.pathfinder.modifiers.TankModifier;
 public class Path {
 
 	static double timeStep = 0.02;
-	static double maxVel = 8; //3  //11
+	static double maxVel = 6.5; //3  //11
 	static double maxAccel = 20; //12
 	static double maxJerk = 50; //100
 	double wheelBaseWidth = 2.333;
-	int ticksPerRev = 2304; 
+	int ticksPerRev = 2419; 
 	double wheelDiameter = 0.3283333333333333;
 	//done in feet for now
 
 	double p = 0.15; //.115
 	double i = 0;
 	double d = 0;
-	double velocityRatio = 1/12;
-	double accelGain = 0.01;
+	double velocityRatio = 1/10;
+	double accelGain = 0.02;
 
 	// The first argument is the proportional gain. Usually this will be quite high
 	// The second argument is the integral gain. This is unused for motion profiling
@@ -58,11 +58,6 @@ public class Path {
 
 	public Path(Trajectory forwardTrajectory) {
 		try{	
-			/*System.out.println("Generating trajectory...");
-			Trajectory.Config testConfig = new Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH, timeStep, maxVel, maxAccel, maxJerk);
-			forwardTrajectory = Pathfinder.generate(points, testConfig);
-			TankModifier testModifier = new TankModifier(forwardTrajectory).modify(wheelBaseWidth);
-			System.out.println("Trajectory Generation completed");*/
 
 			TankModifier testModifier = new TankModifier(forwardTrajectory).modify(wheelBaseWidth);
 
@@ -76,10 +71,6 @@ public class Path {
 			testEncLeft.configurePIDVA(p, i, d, velocityRatio, accelGain);
 			testEncRight.configurePIDVA(p, i, d, velocityRatio, accelGain);
 
-			/*for(int i = 0; i < forwardTrajectory.segments.length; i++) {
-				System.out.println("Segment " + i + ") x: " + forwardTrajectory.segments[i].x + " y: " + forwardTrajectory.segments[i].y + " heading: " + Pathfinder.r2d(forwardTrajectory.segments[i].heading));
-			}*/
-
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("Error in Path Construction" + e.getMessage());
@@ -87,7 +78,7 @@ public class Path {
 	}
 
 	private static final String DIRECTORY = "/home/lvuser/frc/trajectories/";
-	
+
 	public static void setBackupTrajectories(HashMap<String, Trajectory> map) {
 		try {
 			File file = new File(DIRECTORY+"testTraj.dat");

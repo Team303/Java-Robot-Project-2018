@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class ActionWait implements Action {
 	
-	private int time;
+	private double time;
 	Timer timer = new Timer();
 	boolean firstRun = true;
 	
@@ -16,12 +16,15 @@ public class ActionWait implements Action {
 	/**
 	 * @param time in seconds
 	 */
-	public ActionWait(int time) {
+	public ActionWait(double time) {
 		this.time = time;
 	}
 
 	public void run() {
-		if(firstRun) timer.start();
+		if(firstRun) {
+			timer.start();
+			firstRun = false;
+		}
 	}	
 	
 	public boolean isFinished() {

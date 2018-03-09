@@ -23,11 +23,11 @@ public class ActionDriveByTrajectory implements Action {
 	Notifier notifier;
 	int initialEncoderL;
 	int initialEncoderR;
-	
+
 	public ActionDriveByTrajectory(Trajectory trajectory, boolean isReversed) {
 		path = new Path(trajectory);
 		notifier = new Notifier(()->{
-	
+
 			if(isReversed) { //TODO probably also need to invert sensors for isReversed
 				temp = l;
 				l = -path.testEncRight.calculate((Robot.drivebase.getRightEncoder()-initialEncoderR));
@@ -36,14 +36,14 @@ public class ActionDriveByTrajectory implements Action {
 				l = path.testEncLeft.calculate(Robot.drivebase.getLeftEncoder()-initialEncoderL);
 				r = path.testEncRight.calculate(Robot.drivebase.getRightEncoder()-initialEncoderR);
 			}
-			
+
 			double theta = Robot.navX.getYaw();
 			double desiredHeading = Pathfinder.r2d(path.testEncLeft.getHeading());
 			double angleDifference = Pathfinder.boundHalfDegrees(desiredHeading-theta);
-			double turn = 0.025*angleDifference;
+			double turn = 0.01*angleDifference;
 
 			System.out.println(l+" "+r+" with turn value "+turn);
-			Robot.drivebase.drive(l, r);
+			Robot.drivebase.drive(-l - turn, -r + turn);
 			SmartDashboard.putNumber("L", Robot.drivebase.getLeftEncoder());
 			SmartDashboard.putNumber("R", Robot.drivebase.getRightEncoder());
 			if(!path.testEncLeft.isFinished() && !path.testEncRight.isFinished()) {
@@ -58,9 +58,10 @@ public class ActionDriveByTrajectory implements Action {
 			if(!DriverStation.getInstance().isAutonomous() || DriverStation.getInstance().isDisabled()) {
 				notifier.stop();
 			}
-		
+
 		});
 	}
+
 
 	public void run() {
 		if(firstRun) {
@@ -69,7 +70,7 @@ public class ActionDriveByTrajectory implements Action {
 			initialEncoderR = Robot.drivebase.getRightEncoder();
 			notifier.startPeriodic(0.02);
 		}
-		
+
 		//this doesn't really do much, because the notifier does it
 
 		firstRun = false;

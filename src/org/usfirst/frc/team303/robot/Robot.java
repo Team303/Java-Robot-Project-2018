@@ -41,7 +41,7 @@ public class Robot extends IterativeRobot {
 	public static Intake intake;
 	public static Autonomous auto;
 	public static Compressor compressor;
-	private double wheelSpeed = -0.6;
+	private double wheelSpeed = 0.6;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -76,7 +76,8 @@ public class Robot extends IterativeRobot {
 
 		auto.initWaypoints();
 	
-		CameraServer.getInstance().startAutomaticCapture();
+		CameraServer cameraServer = CameraServer.getInstance();
+		cameraServer.startAutomaticCapture(0);
 	}
 
 	/**
@@ -165,15 +166,15 @@ public class Robot extends IterativeRobot {
 			else if(selected==Auto.SCALE_AND_SWITCH) {}
 			else if(selected==Auto.EXCHANGE) {}
 			else if(selected==Auto.SWITCH) {}
-			else if(selected==Auto.SCALE) {}
+			else if(selected==Auto.SCALE) {auto.assembleRightRightScale();}
 		} else if(gameMessage.startsWith("RR")) {
 			Auto selected = configRR.getSelected();
 			if(selected==Auto.DO_NOTHING) {}
 			else if(selected==Auto.FORWARD) auto.assembleForward();
-			else if(selected==Auto.SCALE_AND_SWITCH) {auto.assembleRightRightSwitchRightScale();}
+//			else if(selected==Auto.SCALE_AND_SWITCH) {auto.assembleRightRightSwitchRightScale();}
 			else if(selected==Auto.EXCHANGE) {} //this should do nothing
 			else if(selected==Auto.SWITCH) {}
-			else if(selected==Auto.SCALE) {}
+			else if(selected==Auto.SCALE) {auto.assembleRightRightScale();}
 		} else if(gameMessage.startsWith("RL")) {
 			Auto selected = configRL.getSelected();
 			if(selected==Auto.DO_NOTHING) {}
@@ -232,9 +233,9 @@ public class Robot extends IterativeRobot {
 		}
 
 		//intake gripper
-		if(OI.rBtn[1]) {
+		if(OI.rBtn[2]) {
 			intake.setGripper(true);
-		} else if(OI.rBtn[2]) {
+		} else if(OI.rBtn[1]) {
 			intake.setGripper(false);
 		}
 
@@ -262,7 +263,7 @@ public class Robot extends IterativeRobot {
 
 		//lift
 		if(OI.xPov==0) { //up
-			lift.setSetpoint(67000);
+			lift.setSetpoint(70000);
 		} else if(OI.xPov==180) { //down
 			lift.setSetpoint(0);
 		} else if(OI.xPov==90) { //right

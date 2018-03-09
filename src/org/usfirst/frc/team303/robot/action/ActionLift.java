@@ -20,7 +20,6 @@ public class ActionLift implements Action {
 
 	public boolean isFinished() {
 		return true;
-		//return Math.abs(setpoint-Robot.lift.getEncoder())<1000;
 	}
 
 

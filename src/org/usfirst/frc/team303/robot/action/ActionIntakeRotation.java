@@ -10,7 +10,7 @@ public class ActionIntakeRotation implements Action {
 	}
 
 	public void run() {
-		//Robot.intake.setGripper(rotation);
+		Robot.intake.setGripper(rotation);
 	}
 
 	public boolean isFinished() {

@@ -6,7 +6,7 @@ public class ActionDelayedAction implements Action {
 
 	Timer timer = new Timer();
 	double time;
-	boolean firstRun;
+	boolean firstRun = true;
 	Action action;
 
 	/**
