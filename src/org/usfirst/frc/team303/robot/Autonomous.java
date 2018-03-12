@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import org.usfirst.frc.team303.robot.action.Action;
 import org.usfirst.frc.team303.robot.action.ActionDelayedAction;
+import org.usfirst.frc.team303.robot.action.ActionDrive;
 import org.usfirst.frc.team303.robot.action.ActionDriveByTrajectory;
 import org.usfirst.frc.team303.robot.action.ActionDriveStraightByEncoders;
 import org.usfirst.frc.team303.robot.action.ActionIntake;
@@ -123,6 +124,7 @@ public class Autonomous {
 		arr.add(getTrajectory("centerLeftSwitch", false));
 		arr.add(new ActionTurnToAngle(0, false, 2)); //TODO test this
 		arr.add(new ActionWait(0.25));
+		arr.add(makeSimpleParallelAction(new ActionWait(0.4), new ActionDrive()));
 		arr.add(makeSimpleParallelAction(new ActionWait(1), new ActionIntake(0.7, -0.7)));
 		arr.add(new ActionIntake(0, 0));
 	}
@@ -131,6 +133,7 @@ public class Autonomous {
 		arr.add(getTrajectory("centerRightSwitch", false));
 		arr.add(new ActionTurnToAngle(0, false, 2)); //TODO test this
 		arr.add(new ActionWait(0.25));
+		arr.add(makeSimpleParallelAction(new ActionWait(0.4), new ActionDrive()));
 		arr.add(makeSimpleParallelAction(new ActionWait(1), new ActionIntake(0.7, -0.7)));
 		arr.add(new ActionIntake(0, 0));
 	}

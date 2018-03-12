@@ -210,14 +210,18 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopInit() {}
-
+	
 	/**
 	 * This function is called periodically during operator control.
 	 */
 	@Override
 	public void teleopPeriodic() {
 		//drivebase
-		drivebase.drive(OI.lY, OI.rY);
+		
+		double driveAlter = (-Math.abs(1-((lift.getEncoder()+230000)/230000.0)))+1;
+		double lDrivePower = (OI.lBtn[7]) ? OI.lY : OI.lY*driveAlter;
+		double rDrivePower = (OI.lBtn[7]) ? OI.rY : OI.rY*driveAlter;
+		drivebase.drive(lDrivePower, rDrivePower);
 
 		//intake wheels
 		if(OI.lBtn[1]) { //in
@@ -292,8 +296,13 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putBoolean("compressor on", compressor.enabled());
 		navX.collisionDetected();
 
+	//	if(OI.rZ<0.5) {
+	//		climber.winch.setSelectedSensorPosition(0, 0, 1000);
+	//		lift.setSetpoint(0);
+	//	}
+		
 		if(OI.lZ<0.5) {
-			drivebase.zeroEncoder();
+		drivebase.zeroEncoder();
 			navX.zeroYaw();
 		}
 	}

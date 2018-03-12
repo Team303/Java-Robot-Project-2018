@@ -27,7 +27,7 @@ public class Lift {
 	}
 
 	public void setSetpoint(int setpoint) {
-		if(setpoint<80000 && setpoint>-1) {
+		if(setpoint<80000 && setpoint>-10000) {
 			this.setpoint = setpoint; 			
 		}
 	}
