@@ -122,7 +122,7 @@ public class Robot extends IterativeRobot {
 			else if(selected==Auto.SCALE_AND_SWITCH) {}
 			else if(selected==Auto.EXCHANGE) {}
 			else if(selected==Auto.SWITCH) {}
-			else if(selected==Auto.SCALE) {}
+			else if(selected==Auto.SCALE) {auto.assembleLeftLeftScale();}
 		} else if(gameMessage.startsWith("LR")) {
 			Auto selected = configLR.getSelected();
 			if(selected==Auto.DO_NOTHING) {}
@@ -130,7 +130,7 @@ public class Robot extends IterativeRobot {
 			else if(selected==Auto.SCALE_AND_SWITCH) {}
 			else if(selected==Auto.EXCHANGE) {}
 			else if(selected==Auto.SWITCH) {}
-			else if(selected==Auto.SCALE) {}
+			else if(selected==Auto.SCALE) { auto.assembleLeftRightScale();}
 		} else if(gameMessage.startsWith("RR")) {
 			Auto selected = configRR.getSelected();
 			if(selected==Auto.DO_NOTHING) {}
@@ -138,7 +138,7 @@ public class Robot extends IterativeRobot {
 			else if(selected==Auto.SCALE_AND_SWITCH) {}
 			else if(selected==Auto.EXCHANGE) {}
 			else if(selected==Auto.SWITCH) {}
-			else if(selected==Auto.SCALE) {}
+			else if(selected==Auto.SCALE) {auto.assembleLeftRightScale();}
 		} else if(gameMessage.startsWith("RL")) {
 			Auto selected = configRL.getSelected();
 			if(selected==Auto.DO_NOTHING) {}
@@ -146,7 +146,7 @@ public class Robot extends IterativeRobot {
 			else if(selected==Auto.SCALE_AND_SWITCH) {}
 			else if(selected==Auto.EXCHANGE) {}
 			else if(selected==Auto.SWITCH) {}
-			else if(selected==Auto.SCALE) {}
+			else if(selected==Auto.SCALE) {auto.assembleLeftLeftScale();}
 		}
 	}
 

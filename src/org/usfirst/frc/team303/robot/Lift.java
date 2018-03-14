@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Lift {
 
-	//bottom to top is ~65000 ticks
+	//bottom to top is ~80000 ticks
 	TalonSRX lift;
 	public static final int kTimeoutMs = 1000;
 	int setpoint = 0;
@@ -19,15 +19,14 @@ public class Lift {
 	public Lift() {
 		lift = new TalonSRX(RobotMap.LIFT_ID);
 		lift.setInverted(RobotMap.LIFT_INV);
-		Robot.climber.winch.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 1000);
-		Robot.climber.winch.configForwardSoftLimitThreshold(80000, 1000);
-		Robot.climber.winch.configForwardSoftLimitEnable(true, 1000);
-		Robot.climber.winch.setSelectedSensorPosition(0, 0, 1000);
-
+		//Robot.climber.winch.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 1000);
+		//Robot.climber.winch.setSelectedSensorPosition(0, 0, 1000);
+		lift.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 1000);
+		lift.setSelectedSensorPosition(0, 0, 1000);
 	}
 
 	public void setSetpoint(int setpoint) {
-		if(setpoint<80000 && setpoint>-10000) {
+		if(setpoint<80001 && setpoint>-10000) {
 			this.setpoint = setpoint; 			
 		}
 	}
@@ -75,7 +74,8 @@ public class Lift {
 	}
 
 	public int getEncoder() {
-		return Robot.climber.winch.getSelectedSensorPosition(0);
+		return -lift.getSelectedSensorPosition(0);
+		//return Robot.climber.winch.getSelectedSensorPosition(0);
 	}
 
 	public void setPercentVoltage(double power) {

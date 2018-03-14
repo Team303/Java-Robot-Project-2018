@@ -24,23 +24,23 @@ public class ActionDriveByTrajectory implements Action {
 	int initialEncoderL;
 	int initialEncoderR;
 
-	public ActionDriveByTrajectory(Trajectory trajectory, boolean isReversed) {
+	public ActionDriveByTrajectory(Trajectory trajectory, double turningConstant, boolean isReversed) {
 		path = new Path(trajectory);
 		notifier = new Notifier(()->{
 
-			if(isReversed) { //TODO probably also need to invert sensors for isReversed
-				temp = l;
-				l = -path.testEncRight.calculate((Robot.drivebase.getRightEncoder()-initialEncoderR));
-				r = -path.testEncLeft.calculate((Robot.drivebase.getLeftEncoder()-initialEncoderL));
-			} else {
+//			if(isReversed) { //TODO probably also need to invert sensors for isReversed
+//				temp = l;
+//				l = -path.testEncRight.calculate((Robot.drivebase.getRightEncoder()-initialEncoderR));
+//				r = -path.testEncLeft.calculate((Robot.drivebase.getLeftEncoder()-initialEncoderL));
+//			} else {
 				l = path.testEncLeft.calculate(Robot.drivebase.getLeftEncoder()-initialEncoderL);
 				r = path.testEncRight.calculate(Robot.drivebase.getRightEncoder()-initialEncoderR);
-			}
+//			}
 
 			double theta = Robot.navX.getYaw();
 			double desiredHeading = Pathfinder.r2d(path.testEncLeft.getHeading());
 			double angleDifference = Pathfinder.boundHalfDegrees(desiredHeading-theta);
-			double turn = 0.01*angleDifference;
+			double turn = turningConstant*angleDifference;
 
 			System.out.println(l+" "+r+" with turn value "+turn);
 			Robot.drivebase.drive(-l - turn, -r + turn);

@@ -9,6 +9,7 @@ import org.usfirst.frc.team303.robot.action.ActionDriveByTrajectory;
 import org.usfirst.frc.team303.robot.action.ActionDriveStraightByEncoders;
 import org.usfirst.frc.team303.robot.action.ActionIntake;
 import org.usfirst.frc.team303.robot.action.ActionIntakeGrip;
+import org.usfirst.frc.team303.robot.action.ActionIntakeRotation;
 import org.usfirst.frc.team303.robot.action.ActionLift;
 import org.usfirst.frc.team303.robot.action.ActionParallelAction;
 import org.usfirst.frc.team303.robot.action.ActionTurnToAngle;
@@ -50,11 +51,11 @@ public class Autonomous {
 		SmartDashboard.putNumber("taskNum", taskNum);
 	}
 
-	public ActionDriveByTrajectory getTrajectory(String trajectoryName, boolean isReversed) {
+	public ActionDriveByTrajectory getTrajectory(String trajectoryName, double turningConstant, boolean isReversed) {
 		if(trajectoryMap==null) {
 			realizeTrajectories();
 		}
-		return new ActionDriveByTrajectory(trajectoryMap.get(trajectoryName), isReversed);
+		return new ActionDriveByTrajectory(trajectoryMap.get(trajectoryName), turningConstant, isReversed);
 	}
 		
 	//WAYPOINTS
@@ -79,31 +80,76 @@ public class Autonomous {
 		Waypoint[] rightRightScaleApproach = new Waypoint[] {
 				new Waypoint(0, 0, 0),
 				new Waypoint(15, 0, 0),
-				new Waypoint(22, -5, Pathfinder.d2r(-25)),
+				new Waypoint(22.5, -6, Pathfinder.d2r(-25)),
 		};
 		Waypoint[] leftLeftScaleApproach = new Waypoint[] {
 				new Waypoint(0, 0, 0),
-				new Waypoint(17, 0, 0),
-				new Waypoint(24, -4, Pathfinder.d2r(0)),
+				new Waypoint(15, 0, 0),
+				new Waypoint(22.5, 3, Pathfinder.d2r(25)),
+		};
+		Waypoint[] leftRightScaleApproach = new Waypoint[] {
+				new Waypoint(0, 0, 0),
+				new Waypoint(13.5, 0, 0),
+				new Waypoint(18.5, 10, Pathfinder.d2r(90)),
+				new Waypoint(22, 16.5, 0)
 		};
 	
 	
 		wayMap.put("forward", forward);
+		wayMap.put("leftLeftScaleApproach", leftLeftScaleApproach);
 		wayMap.put("rightRightScaleApproach", rightRightScaleApproach);
 		wayMap.put("centerLeftSwitch", centerLeftSwitch);
 		wayMap.put("centerRightSwitch", centerRightSwitch);
-		
+		wayMap.put("leftRightScaleApproach", leftRightScaleApproach);
+
 		pathfinderInputTable.putString("waypoints", Path.serializeWaypointMap(wayMap));
 	}
 	
 	public void assembleForward() {
-		arr.add(getTrajectory("forward", false));
+		arr.add(getTrajectory("forward", 0.01, false));
+	}
+	
+	public void assembleLeftLeftScale() {
+		arr.add(new ActionIntakeRotation(true));
+		arr.add(makeSimpleParallelAction(getTrajectory("leftLeftScaleApproach", 0.01, false), new ActionDelayedAction(1, new ActionLift(70000))));
+		arr.add(makeSimpleParallelAction(new ActionTurnToAngle(15, false, 4), new ActionLift(70000)));
+		arr.add(makeSimpleParallelAction(new ActionWait(1), new ActionIntake(0.7, -0.7)));
+		arr.add(new ActionIntakeRotation(false));
+		backupFromScale();
+	}
+	
+	public void assembleLeftRightScale() {
+		arr.add(new ActionIntakeRotation(true));
+		arr.add(getTrajectory("leftRightScaleApproach", 0.03, false));
+		arr.add(new ActionTurnToAngle(0, false, 5));
+		arr.add(makeSimpleParallelAction(new ActionDriveStraightByEncoders(1000, 0.5), new ActionLift(70000)));
+	}
+	
+	public void backupFromScale() {
+		ArrayList<Action> backupNonCon1 = new ArrayList<>();
+		backupNonCon1.add(new ActionDrive(0.6, 0.6));
+		backupNonCon1.add(new ActionIntake(0, 0));
+		backupNonCon1.add(new ActionLift(70000));
+		ArrayList<Action> backupCon1 = new ArrayList<>();
+		backupCon1.add(new ActionWait(0.5));
+		arr.add(new ActionParallelAction(backupCon1, backupNonCon1));
+	
+		ArrayList<Action> backupNonCon = new ArrayList<>();
+		backupNonCon.add(new ActionDrive(0.6, 0.6));
+		backupNonCon.add(new ActionIntake(0, 0));
+		backupNonCon.add(new ActionLift(0));
+		ArrayList<Action> backupCon = new ArrayList<>();
+		backupCon.add(new ActionWait(1));
+		arr.add(new ActionParallelAction(backupCon, backupNonCon));
 	}
 	
 	public void assembleRightRightScale() {
-		arr.add(makeSimpleParallelAction(getTrajectory("rightRightScaleApproach", false), new ActionDelayedAction(3, new ActionLift(50000))));
-		arr.add(new ActionTurnToAngle(0, false, 2));
-		arr.add(new ActionIntakeGrip(true));
+		arr.add(new ActionIntakeRotation(true));
+		arr.add(makeSimpleParallelAction(getTrajectory("rightRightScaleApproach", 0.01, false), new ActionDelayedAction(1, new ActionLift(70000))));
+		arr.add(makeSimpleParallelAction(new ActionTurnToAngle(-15, false, 4), new ActionLift(70000)));
+		arr.add(makeSimpleParallelAction(new ActionWait(1), new ActionIntake(0.7, -0.7)));
+		arr.add(new ActionIntakeRotation(false));
+		backupFromScale();
 	}
 	
 //	public void assembleRightRightSwitchRightScale() {
@@ -121,8 +167,9 @@ public class Autonomous {
 //	}
 	
 	public void assembleCenterSwitchLeft() {
-		arr.add(getTrajectory("centerLeftSwitch", false));
-		arr.add(new ActionTurnToAngle(0, false, 2)); //TODO test this
+		System.out.println("running center switch left");
+		arr.add(getTrajectory("centerLeftSwitch", 0.01, false));
+		arr.add(new ActionTurnToAngle(0, false, 8));
 		arr.add(new ActionWait(0.25));
 		arr.add(makeSimpleParallelAction(new ActionWait(0.4), new ActionDrive()));
 		arr.add(makeSimpleParallelAction(new ActionWait(1), new ActionIntake(0.7, -0.7)));
@@ -130,8 +177,8 @@ public class Autonomous {
 	}
 	
 	public void assembleCenterSwitchRight() {
-		arr.add(getTrajectory("centerRightSwitch", false));
-		arr.add(new ActionTurnToAngle(0, false, 2)); //TODO test this
+		arr.add(getTrajectory("centerRightSwitch", 0.01, false));
+		arr.add(new ActionTurnToAngle(0, false, 8)); 
 		arr.add(new ActionWait(0.25));
 		arr.add(makeSimpleParallelAction(new ActionWait(0.4), new ActionDrive()));
 		arr.add(makeSimpleParallelAction(new ActionWait(1), new ActionIntake(0.7, -0.7)));
