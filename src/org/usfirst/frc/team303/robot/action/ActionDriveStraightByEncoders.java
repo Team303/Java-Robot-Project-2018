@@ -12,6 +12,7 @@ public class ActionDriveStraightByEncoders implements Action {
 	public boolean firstRun = true;
 	Timer timer = new Timer();
 	public double initalYaw = 0;
+	public int initial = 0;
 	
 	public ActionDriveStraightByEncoders(int distance, double power) {
 		this(distance, power, 15);
@@ -27,6 +28,7 @@ public class ActionDriveStraightByEncoders implements Action {
 		if (firstRun) {
 			initalYaw = Robot.navX.getYaw();
 			timer.start();
+			initial = Robot.drivebase.getLeftEncoder();
 			firstRun = false;
 		}
 
@@ -41,7 +43,14 @@ public class ActionDriveStraightByEncoders implements Action {
 		//Return true if the current encoder value is more or equal to the distance
 		//OR return true if the time is more or equal to the timeout
 		if(timer.get()>=timeout) timer.stop();
-		return (Robot.drivebase.getLeftEncoder() >= distance) || (timer.get() >= timeout);
+		
+		if(Robot.drivebase.getLeftEncoder()>0) {
+			return (Robot.drivebase.getLeftEncoder() - initial >= distance) || (timer.get() >= timeout);			
+		} else {
+			return (Robot.drivebase.getLeftEncoder() - initial <=distance) || (timer.get() >= timeout);
+		}
+				
+		
 	}
 
 }

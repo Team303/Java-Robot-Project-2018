@@ -42,7 +42,7 @@ public class ActionDriveByTrajectory implements Action {
 			double angleDifference = Pathfinder.boundHalfDegrees(desiredHeading-theta);
 			double turn = turningConstant*angleDifference;
 
-			System.out.println(l+" "+r+" with turn value "+turn);
+		//	System.out.println(l+" "+r+" with turn value "+turn);
 			Robot.drivebase.drive(-l - turn, -r + turn);
 			SmartDashboard.putNumber("L", Robot.drivebase.getLeftEncoder());
 			SmartDashboard.putNumber("R", Robot.drivebase.getRightEncoder());
