@@ -34,6 +34,7 @@ public class Robot extends IterativeRobot {
 	private SendableChooser<Auto> configLL = new SendableChooser<>();
 	private SendableChooser<Auto> configLR = new SendableChooser<>();
 
+	public static Camera camera;
 	public static NavX navX;
 	public static Lift lift;
 	public static Climber climber;
@@ -42,7 +43,10 @@ public class Robot extends IterativeRobot {
 	public static Autonomous auto;
 	public static Compressor compressor;
 	private double wheelSpeed = 0.6;
-
+	public static Canifier canifier;
+	public boolean navXControl = false;
+	
+	
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
@@ -73,11 +77,12 @@ public class Robot extends IterativeRobot {
 		lift = new Lift();
 		auto = new Autonomous();
 		compressor = new Compressor();
-
+		canifier = new Canifier();
+		camera = new Camera();
+		
 		auto.initWaypoints();
 	
-		CameraServer cameraServer = CameraServer.getInstance();
-		cameraServer.startAutomaticCapture(0);
+		canifier.setWhite();
 	}
 
 	/**
@@ -120,7 +125,7 @@ public class Robot extends IterativeRobot {
 			if(selected==Auto.DO_NOTHING) {}
 			else if(selected==Auto.FORWARD) auto.assembleForward();
 			else if(selected==Auto.SCALE_AND_SWITCH) {}
-			else if(selected==Auto.EXCHANGE) {}
+			else if(selected==Auto.EXCHANGE) {auto.assembleTest();} //TODO REMOVE THIS PLEASE
 			else if(selected==Auto.SWITCH) {auto.assembleLeftLeftSwitch();}
 			else if(selected==Auto.SCALE) {auto.assembleLeftLeftScale();}
 		} else if(gameMessage.startsWith("LR")) {
@@ -211,17 +216,44 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopInit() {}
 	
+	boolean disabledState;
+	public boolean pulse(boolean input){	
+		if(input){
+			if(!disabledState){
+				disabledState = true;
+				return true;
+			}
+			return false;
+		}
+		disabledState = false;
+		return false;
+	}
+	
 	/**
 	 * This function is called periodically during operator control.
 	 */
 	@Override
 	public void teleopPeriodic() {
 		//drivebase
-		
 		double driveAlter = (-Math.abs(1-((lift.getEncoder()+230000)/230000.0)))+1;
 		double lDrivePower = (OI.lBtn[7]) ? OI.lY : OI.lY*driveAlter;
 		double rDrivePower = (OI.lBtn[7]) ? OI.rY : OI.rY*driveAlter;
-		drivebase.drive(lDrivePower, rDrivePower);
+		
+		if(OI.lPov!=90) {	 //drive normally	
+			if(navXControl) {
+				//navX.turnController.disable();
+				navXControl = false;
+			}
+			drivebase.drive(lDrivePower, rDrivePower);
+		} else { //do pid turn
+			navXControl = true;
+			if(pulse(navXControl)) {				
+				navX.setSetpoint(90);
+				navX.turnController.enable();
+			}
+			double output = navX.getPidOutput();
+			drivebase.drive(-output, output);
+		}
 
 		//intake wheels
 		if(OI.lBtn[1]) { //in
@@ -232,6 +264,8 @@ public class Robot extends IterativeRobot {
 			intake.setWheels(wheelSpeed, wheelSpeed);
 		} else if(OI.lBtn[6]) { //right
 			intake.setWheels(-wheelSpeed, -wheelSpeed);
+		} else if(OI.lBtn[3]) { //slow out
+			intake.setWheels(0.20, -0.20);
 		} else {
 			intake.setWheels(0, 0);
 		}
@@ -305,6 +339,15 @@ public class Robot extends IterativeRobot {
 		drivebase.zeroEncoder();
 			navX.zeroYaw();
 		}
+		
+//		int random = (int)(Math.random()*3);
+//		if(random==0) {
+//			canifier.setRed();
+//		} else if(random==1) {
+//			canifier.setBlue();
+//		} else if(random==2) {
+//			canifier.setGreen();
+//		}
 	}
 
 	/**

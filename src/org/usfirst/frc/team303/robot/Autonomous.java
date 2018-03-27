@@ -71,11 +71,11 @@ public class Autonomous {
 		};
 		Waypoint[] centerLeftSwitch = new Waypoint[] {
 				new Waypoint(0, 0, 0),
-				new Waypoint(9.5, -9, Pathfinder.d2r(0)),
+				new Waypoint(9, -9, Pathfinder.d2r(0)),
 		};
 		Waypoint[] centerRightSwitch = new Waypoint[] {
 				new Waypoint(0, 0, 0),
-				new Waypoint(11.5, 8, Pathfinder.d2r(0)),
+				new Waypoint(11, 8, Pathfinder.d2r(0)),
 		};
 		Waypoint[] rightRightScaleApproach = new Waypoint[] {
 				new Waypoint(0, 0, 0),
@@ -85,7 +85,7 @@ public class Autonomous {
 		Waypoint[] leftLeftScaleApproach = new Waypoint[] {
 				new Waypoint(0, 0, 0),
 				new Waypoint(15, 0, 0),
-				new Waypoint(22.5, 3, Pathfinder.d2r(25)),
+				new Waypoint(22.5, 3, Pathfinder.d2r(35)),
 		};
 		Waypoint[] leftRightScaleApproach = new Waypoint[] {
 				new Waypoint(0, 0, 0),
@@ -115,6 +115,12 @@ public class Autonomous {
 		wayMap.put("leftLeftSwitch", leftLeftSwitch);
 		
 		pathfinderInputTable.putString("waypoints", Path.serializeWaypointMap(wayMap));
+	}
+	
+	public void assembleTest() {
+		arr.add(new ActionIntakeRotation(true));
+		arr.add(makeSimpleParallelAction(new ActionWait(3), new ActionLift(75500)));
+		arr.add(makeSimpleParallelAction(new ActionWait(5), new ActionLift(0)));
 	}
 	
 	public void assembleForward() {
@@ -149,9 +155,13 @@ public class Autonomous {
 		arr.add(new ActionIntakeRotation(true));
 		arr.add(makeSimpleParallelAction(getTrajectory("leftLeftScaleApproach", 0.01, false), new ActionDelayedAction(1, new ActionLift(70000))));
 		//arr.add(makeSimpleParallelAction(new ActionTurnToAngle(15, false, 8), new ActionLift(70000)));
-		arr.add(makeSimpleParallelAction(new ActionWait(1), new ActionIntake(0.5, -0.5)));
+		//arr.add(makeSimpleParallelAction(new ActionWait(1), new ActionIntake(0.4, -0.4)));
+		arr.add(makeSimpleParallelAction(new ActionWait(1), new ActionIntakeGrip(true)));
 		arr.add(new ActionIntakeRotation(false));
 		backupFromScale();
+		
+		arr.add(makeSimpleParallelAction(new ActionWait(15), new ActionLift(0)));
+		
 	}
 	
 	public void assembleLeftRightScale() {
@@ -159,21 +169,23 @@ public class Autonomous {
 		arr.add(getTrajectory("leftRightScaleApproach", 0.02, false));
 		arr.add(new ActionTurnToAngle(0, false, 5));
 		arr.add(makeSimpleParallelAction(new ActionWait(0.5), new ActionDrive(0.75, 0.75)));
-		arr.add(makeSimpleParallelAction(new ActionWait(2), new ActionLift(70000)));
-		arr.add(makeSimpleParallelAction(new ActionWait(0.35), new ActionDrive(-0.7, -0.7)));
-		arr.add(makeSimpleParallelAction(new ActionWait(1), new ActionIntake(1, -1)));
+		arr.add(makeSimpleParallelAction(new ActionWait(2), new ActionLift(75500)));
+		arr.add(makeSimpleParallelAction(new ActionWait(0.75), new ActionDrive(-0.65, -0.65)));
+		arr.add(makeSimpleParallelAction(new ActionWait(1), new ActionIntakeGrip(true)));
 		backupFromScale();
+		arr.add(makeSimpleParallelAction(new ActionWait(15), new ActionLift(0)));
 	}
 	
 	public void assembleRightLeftScale() {
 		arr.add(new ActionIntakeRotation(true));
 		arr.add(getTrajectory("rightLeftScaleApproach", 0.02, false));
 		arr.add(new ActionTurnToAngle(0, false, 5));
-		arr.add(makeSimpleParallelAction(new ActionWait(0.3), new ActionDrive(0.75, 0.75)));
-		arr.add(makeSimpleParallelAction(new ActionWait(2), new ActionLift(70000)));
-		arr.add(makeSimpleParallelAction(new ActionWait(0.35), new ActionDrive(-0.7, -0.7)));
-		arr.add(makeSimpleParallelAction(new ActionWait(1), new ActionIntake(1, -1)));
+		arr.add(makeSimpleParallelAction(new ActionWait(0.5), new ActionDrive(0.75, 0.75)));
+		arr.add(makeSimpleParallelAction(new ActionWait(2), new ActionLift(75500)));
+		arr.add(makeSimpleParallelAction(new ActionWait(0.55), new ActionDrive(-0.65, -0.65)));
+		arr.add(makeSimpleParallelAction(new ActionWait(1), new ActionIntakeGrip(true)));
 		backupFromScale();
+		arr.add(makeSimpleParallelAction(new ActionWait(15), new ActionLift(0)));
 	}
 	
 	public void backupFromScale() {
@@ -206,8 +218,8 @@ public class Autonomous {
 	public void assembleCenterSwitchLeft() {
 		arr.add(new ActionIntakeRotation(true));
 		arr.add(makeSimpleParallelAction(getTrajectory("centerLeftSwitch", 0.01, false), new ActionDelayedAction(1, new ActionLift(25000))));
+		arr.add(makeSimpleParallelAction(new ActionTurnToAngle(0, false, 3), new ActionLift(25000)));
 		arr.add(makeSimpleParallelAction(new ActionWait(0.5), new ActionDrive()));
-		arr.add(makeSimpleParallelAction(new ActionTurnToAngle(0, false, 8), new ActionLift(25000)));
 		arr.add(makeSimpleParallelAction(new ActionWait(1), new ActionIntake(0.7, -0.7)));
 		arr.add(new ActionIntake(0, 0));
 	}
