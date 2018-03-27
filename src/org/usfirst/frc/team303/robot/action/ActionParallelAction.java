@@ -1,9 +1,16 @@
 package org.usfirst.frc.team303.robot.action;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ActionParallelAction implements Action {
 	ArrayList<Action> conditionActions=new ArrayList<Action>();//actions that control when it is finished
 	ArrayList<Action> nonConditionActions=new ArrayList<Action>(); //actions that run and do not control when finished
+	
+	//varargs magic
+	public ActionParallelAction(Action conditionalAction, Action... nonConditionalActions) {
+		conditionActions.add(conditionalAction);
+		nonConditionActions.addAll(Arrays.asList(nonConditionalActions));
+	}
 	
 	public ActionParallelAction(ArrayList<Action> conditionActionsC, ArrayList<Action> nonConditionActionsC){
 		conditionActions=conditionActionsC;

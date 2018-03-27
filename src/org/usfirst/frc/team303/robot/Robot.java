@@ -99,10 +99,12 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousInit() {
 		auto.realizeTrajectories();
-
+		compressor.setClosedLoopControl(false);
+		compressor.stop();
+		
 		//Message is three character string with first letter as switch and second as scale
 		gameMessage = DriverStation.getInstance().getGameSpecificMessage();
-		while(gameMessage.length()!=3) {
+		while(gameMessage==null) {
 			gameMessage = DriverStation.getInstance().getGameSpecificMessage();
 		}
 		SmartDashboard.putString("game string", gameMessage);
@@ -214,7 +216,9 @@ public class Robot extends IterativeRobot {
 	}
 
 	@Override
-	public void teleopInit() {}
+	public void teleopInit() {
+		compressor.setClosedLoopControl(true);
+	}
 	
 	boolean disabledState;
 	public boolean pulse(boolean input){	

@@ -156,8 +156,20 @@ public class Autonomous {
 		arr.add(makeSimpleParallelAction(getTrajectory("leftLeftScaleApproach", 0.01, false), new ActionDelayedAction(1, new ActionLift(70000))));
 		//arr.add(makeSimpleParallelAction(new ActionTurnToAngle(15, false, 8), new ActionLift(70000)));
 		//arr.add(makeSimpleParallelAction(new ActionWait(1), new ActionIntake(0.4, -0.4)));
-		arr.add(makeSimpleParallelAction(new ActionWait(1), new ActionIntakeGrip(true)));
+		arr.add(makeSimpleParallelAction(new ActionWait(0.5), new ActionIntake(0.5,-0.5)));
 		arr.add(new ActionIntakeRotation(false));
+		arr.add(new ActionIntakeGrip(true));
+		backupFromScale();
+		arr.add(new ActionIntakeRotation(true));
+		arr.add(new ActionTurnToAngle(120, false, 2.5f));
+		arr.add(new ActionParallelAction(new ActionWait(0.95), new ActionDrive(-0.7,-0.7), new ActionIntake(-0.7,0.7), new ActionLift(0)));
+		arr.add(new ActionIntakeGrip(false));
+		arr.add(new ActionParallelAction(new ActionWait(0.95), new ActionDrive(0.7,0.7), new ActionLift(0)));
+		//arr.add(new ActionIntake(0,0));
+		arr.add(new ActionParallelAction(new ActionTurnToAngle(25, false, 2.5f), new ActionDelayedAction(0.5, new ActionLift(70000))));
+		arr.add(new ActionParallelAction(new ActionWait(0.7), new ActionDrive(-0.8,-0.8), new ActionLift(70000)));
+		arr.add(new ActionParallelAction(new ActionWait(0.5), new ActionLift(70000), new ActionIntake(0.7,-0.7)));
+		arr.add(new ActionIntake(0,0));
 		backupFromScale();
 		
 		arr.add(makeSimpleParallelAction(new ActionWait(15), new ActionLift(0)));
@@ -188,22 +200,9 @@ public class Autonomous {
 		arr.add(makeSimpleParallelAction(new ActionWait(15), new ActionLift(0)));
 	}
 	
-	public void backupFromScale() {
-		ArrayList<Action> backupNonCon1 = new ArrayList<>();
-		backupNonCon1.add(new ActionDrive(0.6, 0.6));
-		backupNonCon1.add(new ActionIntake(0, 0));
-		backupNonCon1.add(new ActionLift(70000));
-		ArrayList<Action> backupCon1 = new ArrayList<>();
-		backupCon1.add(new ActionWait(0.5));
-		arr.add(new ActionParallelAction(backupCon1, backupNonCon1));
-	
-		ArrayList<Action> backupNonCon = new ArrayList<>();
-		backupNonCon.add(new ActionDrive(0.6, 0.6));
-		backupNonCon.add(new ActionIntake(0, 0));
-		backupNonCon.add(new ActionLift(0));
-		ArrayList<Action> backupCon = new ArrayList<>();
-		backupCon.add(new ActionWait(1));
-		arr.add(new ActionParallelAction(backupCon, backupNonCon));
+	public void backupFromScale() {	
+		//arr.add(new ActionParallelAction(new ActionWait(0.05), new ActionDrive(0.8,0.8), new ActionIntake(0,0), new ActionLift(70000)));	
+		arr.add(new ActionParallelAction(new ActionWait(0.55), new ActionDrive(0.8,0.8), new ActionIntake(0,0), new ActionLift(0)));	
 	}
 	
 	public void assembleRightRightScale() {
@@ -213,6 +212,8 @@ public class Autonomous {
 		arr.add(makeSimpleParallelAction(new ActionWait(1), new ActionIntake(0.5, -0.5)));
 		arr.add(new ActionIntakeRotation(false));
 		backupFromScale();
+		
+		arr.add(new ActionParallelAction(new ActionWait(1), new ActionDrive(0.5, 0.5), new ActionLift(10000)));
 	}
 	
 	public void assembleCenterSwitchLeft() {

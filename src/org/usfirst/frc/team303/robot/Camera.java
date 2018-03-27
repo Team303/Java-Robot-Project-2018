@@ -6,6 +6,7 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
+import edu.wpi.cscore.CameraServerJNI;
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
@@ -15,6 +16,7 @@ public class Camera {
 
 	public Camera() {
 		Thread cameraThread = new Thread(()->{
+			CameraServerJNI.setTelemetryPeriod(1);
 			UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
 			camera.setResolution(640, 480);
 			camera.setFPS(30);
