@@ -34,7 +34,7 @@ public class ActionDriveStraightByEncoders implements Action {
 
 		//call drive straight - returns a double array with first index as left POWER, and second index as right POWER
 		//driveStraight(power, angle difference, tuning constant)
-		double[] pow = Action.driveStraight(-power, Robot.navX.getYaw()-initalYaw, 0.01);
+		double[] pow = Action.driveStraight(power, Robot.navX.getYaw()-initalYaw, 0.01);
 		Robot.drivebase.drive(pow[0], pow[1]);		
 	}
 
@@ -44,13 +44,7 @@ public class ActionDriveStraightByEncoders implements Action {
 		//OR return true if the time is more or equal to the timeout
 		if(timer.get()>=timeout) timer.stop();
 		
-		if(Robot.drivebase.getLeftEncoder()>0) {
-			return (Robot.drivebase.getLeftEncoder() - initial >= distance) || (timer.get() >= timeout);			
-		} else {
-			return (Robot.drivebase.getLeftEncoder() - initial <=distance) || (timer.get() >= timeout);
-		}
-				
-		
+		return Math.abs(Robot.drivebase.getLeftEncoder()-initial)>=Math.abs(distance) || timer.get() >=timeout;
 	}
 
 }
