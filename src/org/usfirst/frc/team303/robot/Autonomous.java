@@ -71,17 +71,19 @@ public class Autonomous {
 		};
 		Waypoint[] centerLeftSwitch = new Waypoint[] {
 				new Waypoint(0, 0, 0),
-				new Waypoint(9, -9, Pathfinder.d2r(0)),
+				new Waypoint(5, -9.5, 0),
+				new Waypoint(8.5, -9.5, Pathfinder.d2r(0)),
 		};
 		Waypoint[] centerRightSwitch = new Waypoint[] {
 				new Waypoint(0, 0, 0),
-				new Waypoint(11, 8, Pathfinder.d2r(0)),
+				new Waypoint(5, 8.25, 0),
+				new Waypoint(8.5, 8.25, Pathfinder.d2r(0)),
 		};
 		Waypoint[] rightRightScaleApproach = new Waypoint[] {
 				new Waypoint(0, 0, 0),
 				new Waypoint(15, 0, 0),
-				new Waypoint(22, -2.5, Pathfinder.d2r(-35)),
-	};
+				new Waypoint(22, -4.5, Pathfinder.d2r(-55)),
+		};
 		Waypoint[] leftLeftScaleApproach = new Waypoint[] {
 				new Waypoint(0, 0, 0),
 				new Waypoint(15, 0, 0),
@@ -122,6 +124,13 @@ public class Autonomous {
 	//	arr.add(makeSimpleParallelAction(new ActionWait(3), new ActionLift(75500)));
 	//	arr.add(makeSimpleParallelAction(new ActionWait(5), new ActionLift(0)));
 		arr.add(new ActionDriveStraightByEncoders(5000, -0.7, 15));
+		arr.add(new ActionDriveStraightByEncoders(5000, 0.7, 15));
+		arr.add(new ActionDriveStraightByEncoders(5000, -0.7, 15));
+		arr.add(new ActionDriveStraightByEncoders(5000, 0.7, 15));
+		arr.add(new ActionDriveStraightByEncoders(5000, -0.7, 15));
+		arr.add(new ActionDriveStraightByEncoders(5000, 0.7, 15));
+
+	
 	}
 	
 	public void assembleForward() {
@@ -191,8 +200,7 @@ public class Autonomous {
 		arr.add(makeSimpleParallelAction(new ActionWait(15), new ActionLift(0)));
 	}
 	
-	
-	
+
 	public void assembleRightLeftScale() {
 		arr.add(new ActionIntakeRotation(true));
 		arr.add(getTrajectory("rightLeftScaleApproach", 0.02, false));
@@ -214,39 +222,105 @@ public class Autonomous {
 		arr.add(new ActionIntakeRotation(true));
 		arr.add(makeSimpleParallelAction(getTrajectory("rightRightScaleApproach", 0.01, false), new ActionDelayedAction(1, new ActionLift(70000))));
 		//arr.add(makeSimpleParallelAction(new ActionTurnToAngle(-15, false, 8), new ActionLift(70000)));
-		arr.add(makeSimpleParallelAction(new ActionWait(1), new ActionIntake(0.5, -0.5)));
+		arr.add(makeSimpleParallelAction(new ActionWait(1), new ActionIntake(0.4, -0.4)));
 		arr.add(new ActionIntakeRotation(false));
+		arr.add(new ActionIntakeGrip(true));
+		
+		arr.add(new ActionParallelAction(new ActionDriveStraightByEncoders(500, 0.7, 15), new ActionIntake(0,0), new ActionLift(70000)));	
+		arr.add(new ActionParallelAction(new ActionDriveStraightByEncoders(4500, 0.55, 15), new ActionIntake(0,0), new ActionLift(0)));	
+		
+		
+		arr.add(new ActionIntakeRotation(true));
+		arr.add(new ActionParallelAction(new ActionTurnToAngle(-140, false, 2.5f), new ActionLift(0)));
+		arr.add(new ActionParallelAction(new ActionDriveStraightByEncoders(8000, -0.7, 15), new ActionIntake(-0.7,0.7), new ActionLift(0)));
+		arr.add(new ActionIntakeGrip(false));
+		arr.add(new ActionParallelAction(new ActionDriveStraightByEncoders(6000, 0.8, 15), new ActionLift(0)));
+		//arr.add(new ActionIntake(0,0));
+		arr.add(new ActionParallelAction(new ActionTurnToAngle(-35, false, 2.5f), new ActionDelayedAction(0.5, new ActionLift(70000))));
+		arr.add(new ActionParallelAction(new ActionDriveStraightByEncoders(4000, -0.6, 15), new ActionLift(70000)));
+		arr.add(new ActionParallelAction(new ActionWait(0.5), new ActionLift(70000), new ActionIntake(0.7,-0.7)));
+		arr.add(new ActionIntake(0,0));
 		backupFromScale();
 		
-		arr.add(new ActionParallelAction(new ActionWait(1), new ActionDrive(0.5, 0.5), new ActionLift(10000)));
+		arr.add(makeSimpleParallelAction(new ActionWait(15), new ActionLift(0)));		
+		//arr.add(new ActionParallelAction(new ActionWait(1), new ActionDrive(0.5, 0.5), new ActionLift(10000)));
 	}
 	
 	public void assembleCenterSwitchLeft() {
 		arr.add(new ActionIntakeRotation(true));
 		arr.add(makeSimpleParallelAction(getTrajectory("centerLeftSwitch", 0.01, false), new ActionDelayedAction(1, new ActionLift(25000))));
-		arr.add(makeSimpleParallelAction(new ActionTurnToAngle(0, false, 3), new ActionLift(25000)));
-		arr.add(makeSimpleParallelAction(new ActionWait(0.5), new ActionDrive()));
-		arr.add(makeSimpleParallelAction(new ActionWait(1), new ActionIntake(0.7, -0.7)));
+		arr.add(new ActionParallelAction(new ActionWait(0.4), new ActionDrive(-0.4,-0.4), new ActionLift(30000)));		
+		//arr.add(makeSimpleParallelAction(new ActionTurnToAngle(0, false, 8), new ActionLift(25000)));
+		arr.add(new ActionParallelAction(new ActionWait(0.35), new ActionIntake(0.7, -0.7), new ActionLift(30000)));
 		arr.add(new ActionIntake(0, 0));
-	}
-	
-	public void assembleCenterSwitchRight() {
-		arr.add(new ActionIntakeRotation(true));
-		arr.add(makeSimpleParallelAction(getTrajectory("centerRightSwitch", 0.01, false), new ActionDelayedAction(1, new ActionLift(25000))));
-		arr.add(makeSimpleParallelAction(new ActionTurnToAngle(0, false, 8), new ActionLift(25000)));
-		arr.add(new ActionParallelAction(new ActionWait(0.25), new ActionIntake(0.7, -0.7), new ActionLift(25000)));
+		
+		//centerSwitchTwo(false);
+
+		arr.add(new ActionIntakeGrip(true));
+		arr.add(new ActionParallelAction(new ActionDriveStraightByEncoders(2000, 0.7, 15), new ActionLift(0)));
+		arr.add(new ActionParallelAction(new ActionTurnToAngle(90, false, 3f), new ActionLift(0)));
+		arr.add(new ActionParallelAction(new ActionDriveStraightByEncoders(9500, -0.65, 15), new ActionLift(0), new ActionIntake(-0.7, 0.7)));
+		arr.add(new ActionIntakeGrip(false));
+		arr.add(new ActionParallelAction(new ActionDriveStraightByEncoders(7500, 0.8, 15), new ActionLift(0)));
+		arr.add(new ActionParallelAction(new ActionTurnToAngle(0, false, 3f), new ActionLift(30000)));
+		arr.add(new ActionParallelAction(new ActionDriveStraightByEncoders(1500, -0.85, 15), new ActionLift(30000)));
+		arr.add(new ActionParallelAction(new ActionWait(0.3), new ActionDrive(-0.5, -0.5), new ActionLift(30000)));
+		arr.add(new ActionParallelAction(new ActionWait(0.35), new ActionIntake(0.7, -0.7), new ActionLift(30000)));
 		arr.add(new ActionIntake(0, 0));
 		
 		arr.add(new ActionIntakeGrip(true));
-		arr.add(new ActionParallelAction(new ActionDriveStraightByEncoders(2100, 0.7, 15), new ActionLift(0)));
-		arr.add(new ActionParallelAction(new ActionTurnToAngle(-90, false, 2.5f), new ActionLift(0)));
-		arr.add(new ActionParallelAction(new ActionDriveStraightByEncoders(9000, -0.7, 15), new ActionLift(0), new ActionIntake(-0.7, 0.7)));
+		arr.add(new ActionParallelAction(new ActionDriveStraightByEncoders(700, 0.7, 15), new ActionLift(0)));
+		arr.add(new ActionParallelAction(new ActionTurnToAngle(90, false, 3f), new ActionLift(0)));
+		arr.add(new ActionParallelAction(new ActionDriveStraightByEncoders(10000, -0.65, 15), new ActionLift(0), new ActionIntake(-0.7, 0.7)));
 		arr.add(new ActionIntakeGrip(false));
-		arr.add(new ActionParallelAction(new ActionDriveStraightByEncoders(6000, 0.7, 15), new ActionLift(0)));
-		arr.add(new ActionParallelAction(new ActionTurnToAngle(0, false, 2.5f), new ActionLift(25000)));
-		arr.add(new ActionParallelAction(new ActionWait(1), new ActionDrive(-0.8, -0.8), new ActionLift(25000)));
-		arr.add(new ActionParallelAction(new ActionWait(0.25), new ActionIntake(0.7, -0.7), new ActionLift(25000)));
+		arr.add(new ActionParallelAction(new ActionDriveStraightByEncoders(7500, 0.8, 15), new ActionLift(7500)));
+		arr.add(new ActionParallelAction(new ActionTurnToAngle(0, false, 3f), new ActionLift(30000)));
+		arr.add(new ActionParallelAction(new ActionDriveStraightByEncoders(1000, -0.85, 15), new ActionLift(30000)));
+		arr.add(new ActionParallelAction(new ActionWait(0.3), new ActionDrive(-0.5, -0.5), new ActionLift(30000)));
+		arr.add(new ActionParallelAction(new ActionWait(0.35), new ActionIntake(0.7, -0.7), new ActionLift(30000)));
+		arr.add(new ActionIntake(0, 0));
+		arr.add(new ActionParallelAction(new ActionWait(15), new ActionLift(30000)));
+		
+	}
 
+	public void assembleCenterSwitchRight() {
+		
+		arr.add(new ActionIntakeRotation(true));
+		arr.add(makeSimpleParallelAction(getTrajectory("centerRightSwitch", 0.01, false), new ActionDelayedAction(1, new ActionLift(25000))));
+		arr.add(new ActionParallelAction(new ActionWait(0.4), new ActionDrive(-0.4,-0.4), new ActionLift(25000)));		
+		//arr.add(makeSimpleParallelAction(new ActionTurnToAngle(0, false, 8), new ActionLift(25000)));
+		arr.add(new ActionParallelAction(new ActionWait(0.35), new ActionIntake(0.7, -0.7), new ActionLift(30000)));
+		arr.add(new ActionIntake(0, 0));
+		
+		//centerSwitchTwo(true);
+		
+		
+		arr.add(new ActionIntakeGrip(true));
+		arr.add(new ActionParallelAction(new ActionDriveStraightByEncoders(1800, 0.7, 15), new ActionLift(0)));
+		arr.add(new ActionParallelAction(new ActionTurnToAngle(-90, false, 3f), new ActionLift(0)));
+		arr.add(new ActionParallelAction(new ActionDriveStraightByEncoders(9500, -0.65, 15), new ActionLift(0), new ActionIntake(-0.7, 0.7)));
+		arr.add(new ActionIntakeGrip(false));
+		arr.add(new ActionParallelAction(new ActionDriveStraightByEncoders(5000, 0.8, 15), new ActionLift(0)));
+		arr.add(new ActionParallelAction(new ActionTurnToAngle(0, false, 3f), new ActionLift(30000)));
+		arr.add(new ActionParallelAction(new ActionDriveStraightByEncoders(1500, -0.85, 15), new ActionLift(30000)));
+		arr.add(new ActionParallelAction(new ActionWait(0.3), new ActionDrive(-0.5, -0.5), new ActionLift(30000)));
+		arr.add(new ActionParallelAction(new ActionWait(0.35), new ActionIntake(0.7, -0.7), new ActionLift(30000)));
+		arr.add(new ActionIntake(0, 0));
+		
+		arr.add(new ActionIntakeGrip(true));
+		arr.add(new ActionParallelAction(new ActionDriveStraightByEncoders(700, 0.7, 15), new ActionLift(0)));
+		arr.add(new ActionParallelAction(new ActionTurnToAngle(-90, false, 3f), new ActionLift(0)));
+		arr.add(new ActionParallelAction(new ActionDriveStraightByEncoders(10000, -0.65, 15), new ActionLift(0), new ActionIntake(-0.7, 0.7)));
+		arr.add(new ActionIntakeGrip(false));
+		arr.add(new ActionParallelAction(new ActionDriveStraightByEncoders(6000, 0.8, 15), new ActionLift(7500)));
+		arr.add(new ActionParallelAction(new ActionTurnToAngle(0, false, 3f), new ActionLift(30000)));
+		arr.add(new ActionParallelAction(new ActionDriveStraightByEncoders(1000, -0.85, 15), new ActionLift(30000)));
+		arr.add(new ActionParallelAction(new ActionWait(0.3), new ActionDrive(-0.5, -0.5), new ActionLift(30000)));
+		arr.add(new ActionParallelAction(new ActionWait(0.35), new ActionIntake(0.7, -0.7), new ActionLift(30000)));
+		arr.add(new ActionIntake(0, 0));
+		arr.add(new ActionParallelAction(new ActionWait(15), new ActionLift(30000)));
+		
+		
 	}
 	
 	public ActionParallelAction makeSimpleParallelAction(Action con, Action nonCon) {

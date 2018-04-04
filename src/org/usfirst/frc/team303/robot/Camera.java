@@ -16,24 +16,24 @@ public class Camera {
 
 	public Camera() {
 		Thread cameraThread = new Thread(()->{
-			CameraServerJNI.setTelemetryPeriod(1);
+			//CameraServerJNI.setTelemetryPeriod(1);
 			UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-			camera.setResolution(640, 480);
-			camera.setFPS(30);
-			camera.setWhiteBalanceAuto();
-			camera.setExposureAuto();
+			//camera.setResolution(640, 480);
+			//camera.setFPS(30);
+			//camera.setWhiteBalanceAuto();
+			//camera.setExposureAuto();
 			
-			CvSink cvSink = CameraServer.getInstance().getVideo();
-			CvSource outputStream = CameraServer.getInstance().putVideo("output-feed", 640, 480);
+			//CvSink cvSink = CameraServer.getInstance().getVideo();
+			//CvSource outputStream = CameraServer.getInstance().putVideo("output-feed", 640, 480);
 			
-			Mat source = new Mat();
-			Mat output = new Mat();
+			//Mat source = new Mat();
+			//Mat output = new Mat();
 			
-			while(!Thread.interrupted()) {
-				cvSink.grabFrame(source);
-				Imgproc.putText(output, "fps: "+camera.getActualFPS(), new Point(50, 50), Core.FONT_HERSHEY_SIMPLEX, 1, new Scalar(200, 200, 200), 4);
-				outputStream.putFrame(output);
-			}
+			//while(!Thread.interrupted()) {
+			//	cvSink.grabFrame(source);
+			//	Imgproc.putText(output, "fps: "+camera.getActualFPS(), new Point(50, 50), Core.FONT_HERSHEY_SIMPLEX, 1, new Scalar(200, 200, 200), 4);
+			//	outputStream.putFrame(output);
+			//}
 		});
 		cameraThread.setDaemon(true);
 		cameraThread.start();
