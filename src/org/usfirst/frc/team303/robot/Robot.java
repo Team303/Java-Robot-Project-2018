@@ -130,6 +130,7 @@ public class Robot extends IterativeRobot {
 			else if(selected==Auto.EXCHANGE) {auto.assembleTest();} //TODO REMOVE THIS PLEASE
 			else if(selected==Auto.SWITCH) {auto.assembleLeftLeftSwitch();}
 			else if(selected==Auto.SCALE) {auto.assembleLeftLeftScale();}
+			else if(selected==Auto.SCALE_AND_SWITCH) {auto.assembleLeftLeftSwitchScale();}
 		} else if(gameMessage.startsWith("LR")) {
 			Auto selected = configLR.getSelected();
 			if(selected==Auto.DO_NOTHING) {}
@@ -182,6 +183,8 @@ public class Robot extends IterativeRobot {
 			else if(selected==Auto.EXCHANGE) {} //this should do nothing
 			else if(selected==Auto.SWITCH) {}
 			else if(selected==Auto.SCALE) {auto.assembleRightRightScale();}
+			else if(selected==Auto.SCALE_AND_SWITCH) {auto.assembleRightRightSwitchScale();}
+
 		} else if(gameMessage.startsWith("RL")) {
 			Auto selected = configRL.getSelected();
 			if(selected==Auto.DO_NOTHING) {}
