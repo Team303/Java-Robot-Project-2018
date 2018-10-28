@@ -26,7 +26,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends IterativeRobot {	
 	public static enum Position {LEFT, RIGHT, CENTER;}
-	public static enum Auto {DO_NOTHING, FORWARD, SCALE_AND_SWITCH, EXCHANGE, SWITCH, SCALE;}
+	public static enum Auto {DO_NOTHING, FORWARD, SCALE_AND_SWITCH, EXCHANGE, SWITCH, SCALE, HALF_CROSS, QUICK_SCALE;}
 	private String gameMessage;
 	private SendableChooser<Position> positionChooser = new SendableChooser<>();
 	private SendableChooser<Auto> configRR = new SendableChooser<>();
@@ -57,6 +57,8 @@ public class Robot extends IterativeRobot {
 		positionChooser.addObject("CENTER", Position.CENTER);
 		positionChooser.addObject("RIGHT", Position.RIGHT);
 
+		
+		
 		for(Auto auto : Auto.values()) {
 			configRR.addObject(auto.toString(), auto);
 			configRL.addObject(auto.toString(), auto);
@@ -83,6 +85,17 @@ public class Robot extends IterativeRobot {
 		auto.initWaypoints();
 	
 		canifier.setWhite();
+		
+//		boolean trajectoriesRealized = false;
+//		while(!trajectoriesRealized) {
+//			try {
+//				auto.realizeTrajectories();
+//				trajectoriesRealized = true;
+//			} catch (NullPointerException e) {
+//				try {Thread.sleep(500);} catch (InterruptedException e2) {}
+//			}
+//		}
+
 	}
 
 	/**
@@ -108,6 +121,7 @@ public class Robot extends IterativeRobot {
 			gameMessage = DriverStation.getInstance().getGameSpecificMessage();
 		}
 		SmartDashboard.putString("game string", gameMessage);
+		System.out.println("game string is: " + gameMessage);
 
 		Position position = positionChooser.getSelected();
 		if(position==Position.LEFT) {
@@ -124,75 +138,90 @@ public class Robot extends IterativeRobot {
 	public void assembleLeftAutoModes() {
 		if(gameMessage.startsWith("LL")) {
 			Auto selected = configLL.getSelected();
+			System.out.println(selected);
 			if(selected==Auto.DO_NOTHING) {}
 			else if(selected==Auto.FORWARD) auto.assembleForward();
-			else if(selected==Auto.SCALE_AND_SWITCH) {}
+			else if(selected==Auto.SCALE_AND_SWITCH) {	auto.assembleLeftLeftSwitchScale();}
 			else if(selected==Auto.EXCHANGE) {auto.assembleTest();} //TODO REMOVE THIS PLEASE
 			else if(selected==Auto.SWITCH) {auto.assembleLeftLeftSwitch();}
 			else if(selected==Auto.SCALE) {auto.assembleLeftLeftScale();}
-			else if(selected==Auto.SCALE_AND_SWITCH) {auto.assembleLeftLeftSwitchScale();}
+			else if(selected==Auto.QUICK_SCALE) {auto.assembleLeftLeftQuickScale();}
 		} else if(gameMessage.startsWith("LR")) {
 			Auto selected = configLR.getSelected();
+			System.out.println(selected);
 			if(selected==Auto.DO_NOTHING) {}
 			else if(selected==Auto.FORWARD) auto.assembleForward();
 			else if(selected==Auto.SCALE_AND_SWITCH) {}
 			else if(selected==Auto.EXCHANGE) {}
 			else if(selected==Auto.SWITCH) {auto.assembleLeftLeftSwitch();}
-			else if(selected==Auto.SCALE) { auto.assembleLeftRightScale();}
+			else if(selected==Auto.SCALE) { auto.newLeftRightScale();}
+			else if(selected==Auto.HALF_CROSS) { auto.assembleLeftRightScaleHalf();}
 		} else if(gameMessage.startsWith("RR")) {
 			Auto selected = configRR.getSelected();
+			System.out.println(selected);
 			if(selected==Auto.DO_NOTHING) {}
 			else if(selected==Auto.FORWARD) auto.assembleForward();
 			else if(selected==Auto.SCALE_AND_SWITCH) {}
 			else if(selected==Auto.EXCHANGE) {}
 			else if(selected==Auto.SWITCH) {}
-			else if(selected==Auto.SCALE) {auto.assembleLeftRightScale();}
+			else if(selected==Auto.SCALE) {auto.newLeftRightScale();}
+			else if(selected==Auto.HALF_CROSS) { auto.assembleLeftRightScaleHalf();}
 		} else if(gameMessage.startsWith("RL")) {
 			Auto selected = configRL.getSelected();
+			System.out.println(selected);
 			if(selected==Auto.DO_NOTHING) {}
 			else if(selected==Auto.FORWARD) auto.assembleForward();
 			else if(selected==Auto.SCALE_AND_SWITCH) {}
 			else if(selected==Auto.EXCHANGE) {}
 			else if(selected==Auto.SWITCH) {}
 			else if(selected==Auto.SCALE) {auto.assembleLeftLeftScale();}
+			else if(selected==Auto.QUICK_SCALE) {auto.assembleLeftLeftQuickScale();}
 		}
 	}
 
 	public void assembleRightAutoModes() {
 		if(gameMessage.startsWith("LL")) {
 			Auto selected = configLL.getSelected();
+			System.out.println(selected);
 			if(selected==Auto.DO_NOTHING) {}
 			else if(selected==Auto.FORWARD) auto.assembleForward();
 			else if(selected==Auto.SCALE_AND_SWITCH) {}
 			else if(selected==Auto.EXCHANGE) {}
 			else if(selected==Auto.SWITCH) {}
-			else if(selected==Auto.SCALE) {auto.assembleRightLeftScale();}
+			else if(selected==Auto.SCALE) {auto.newRightLeftScale();}
+			else if(selected==Auto.HALF_CROSS) { auto.assembleRightLeftScaleHalf();}
 		} else if(gameMessage.startsWith("LR")) {
 			Auto selected = configLR.getSelected();
+			System.out.println(selected);
 			if(selected==Auto.DO_NOTHING) {}
 			else if(selected==Auto.FORWARD) auto.assembleForward();
 			else if(selected==Auto.SCALE_AND_SWITCH) {}
 			else if(selected==Auto.EXCHANGE) {}
 			else if(selected==Auto.SWITCH) {}
 			else if(selected==Auto.SCALE) {auto.assembleRightRightScale();}
+			else if(selected==Auto.QUICK_SCALE) {auto.assembleRightRightQuickScale();}
 		} else if(gameMessage.startsWith("RR")) {
 			Auto selected = configRR.getSelected();
+			System.out.println(selected);
 			if(selected==Auto.DO_NOTHING) {}
 			else if(selected==Auto.FORWARD) auto.assembleForward();
 //			else if(selected==Auto.SCALE_AND_SWITCH) {auto.assembleRightRightSwitchRightScale();}
 			else if(selected==Auto.EXCHANGE) {} //this should do nothing
-			else if(selected==Auto.SWITCH) {}
+			else if(selected==Auto.SWITCH) {auto.assembleRightRightSwitch();}
 			else if(selected==Auto.SCALE) {auto.assembleRightRightScale();}
 			else if(selected==Auto.SCALE_AND_SWITCH) {auto.assembleRightRightSwitchScale();}
-
+			else if(selected==Auto.QUICK_SCALE) {auto.assembleRightRightQuickScale();}
 		} else if(gameMessage.startsWith("RL")) {
 			Auto selected = configRL.getSelected();
+			System.out.println(selected);
 			if(selected==Auto.DO_NOTHING) {}
 			else if(selected==Auto.FORWARD) auto.assembleForward();
 			else if(selected==Auto.SCALE_AND_SWITCH) {}
 			else if(selected==Auto.EXCHANGE) {}
-			else if(selected==Auto.SWITCH) {}
-			else if(selected==Auto.SCALE) {auto.assembleRightLeftScale();}
+			else if(selected==Auto.SWITCH) {auto.assembleRightRightSwitch();}
+			else if(selected==Auto.SCALE) {auto.newRightLeftScale();}
+			else if(selected==Auto.HALF_CROSS) { auto.assembleRightLeftScaleHalf();}
+
 		}
 	}
 
@@ -201,12 +230,19 @@ public class Robot extends IterativeRobot {
 			Auto selected = configLL.getSelected();
 			Auto selected2 = configLR.getSelected();
 			if(selected==Auto.DO_NOTHING || selected2==Auto.DO_NOTHING) return;
-			else auto.assembleCenterSwitchLeft();
+			else {
+				System.out.println("SWITCH LEFT");
+				auto.assembleCenterSwitchLeft();
+
+			}
 		} else if(gameMessage.startsWith("R")) {
 			Auto selected = configRR.getSelected();
 			Auto selected2 = configRL.getSelected();
 			if(selected==Auto.DO_NOTHING || selected2==Auto.DO_NOTHING) return;
-			else auto.assembleCenterSwitchRight();
+			else {
+				System.out.println("SWITCH RIGHT");
+				auto.assembleCenterSwitchRight();
+			}
 		}
 	}
 
@@ -243,8 +279,8 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		//drivebase
 		double driveAlter = (-Math.abs(1-((lift.getEncoder()+230000)/230000.0)))+1;
-		double lDrivePower = (OI.lBtn[7]) ? OI.lY : OI.lY*driveAlter;
-		double rDrivePower = (OI.lBtn[7]) ? OI.rY : OI.rY*driveAlter;
+		double lDrivePower = (OI.lBtn[4]) ? OI.lY : OI.lY*driveAlter;
+		double rDrivePower = (OI.lBtn[4]) ? OI.rY : OI.rY*driveAlter;
 		
 		if(OI.lPov!=90) {	 //drive normally	
 			if(navXControl) {
@@ -261,6 +297,7 @@ public class Robot extends IterativeRobot {
 			double output = navX.getPidOutput();
 			drivebase.drive(-output, output);
 		}
+		
 
 		//intake wheels
 		if(OI.lBtn[1]) { //in
@@ -272,22 +309,24 @@ public class Robot extends IterativeRobot {
 		} else if(OI.lBtn[6]) { //right
 			intake.setWheels(-wheelSpeed, -wheelSpeed);
 		} else if(OI.lBtn[3]) { //slow out
-			intake.setWheels(0.20, -0.20);
+			intake.setWheels(0.4, -0.4);
+		} else if(OI.lBtn[7]){ //slow in
+			intake.setWheels(-0.3, 0.3);
 		} else {
 			intake.setWheels(0, 0);
 		}
 
 		//intake gripper
-		if(OI.rBtn[2]) {
+		if(OI.rBtn[2] || OI.xBtnX) {
 			intake.setGripper(true);
-		} else if(OI.rBtn[1]) {
+		} else if(OI.rBtn[1] || OI.xBtnB) {
 			intake.setGripper(false);
 		}
 
 		//intake rotation
-		if(OI.xBtnY) {
+		if(OI.xBtnY || OI.rPov==0) {
 			intake.setRotation(false);
-		} else if(OI.xBtnA) {
+		} else if(OI.xBtnA || OI.rPov==180) {
 			intake.setRotation(true);
 		}
 
@@ -296,6 +335,15 @@ public class Robot extends IterativeRobot {
 			climber.setPistons(true);
 		} else if(OI.xRightBumper) {
 			climber.setPistons(false);
+		}
+		
+		//buddy climber
+		if(OI.xBtnStart) {
+			climber.setBuddyPiston(true);
+			intake.setGripper(false);
+			intake.setRotation(false);
+		} else if(OI.xBtnBack) {
+			climber.setBuddyPiston(false);
 		}
 
 		if(Math.abs(OI.xrY)>0.5) {
@@ -338,14 +386,16 @@ public class Robot extends IterativeRobot {
 		navX.collisionDetected();
 
 	//	if(OI.rZ<0.5) {
-	//		climber.winch.setSelectedSensorPosition(0, 0, 1000);
+	//		lift.lift.setSelectedSensorPosition(0, 0, 100);
 	//		lift.setSetpoint(0);
 	//	}
 		
 		if(OI.lZ<0.5) {
-		drivebase.zeroEncoder();
+			drivebase.zeroEncoder();
 			navX.zeroYaw();
 		}
+		
+
 		
 //		int random = (int)(Math.random()*3);
 //		if(random==0) {

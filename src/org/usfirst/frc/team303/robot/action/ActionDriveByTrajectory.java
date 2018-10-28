@@ -36,13 +36,16 @@ public class ActionDriveByTrajectory implements Action {
 				l = path.testEncLeft.calculate(Robot.drivebase.getLeftEncoder()-initialEncoderL);
 				r = path.testEncRight.calculate(Robot.drivebase.getRightEncoder()-initialEncoderR);
 //			}
+				
 
 			double theta = Robot.navX.getYaw();
 			double desiredHeading = Pathfinder.r2d(path.testEncLeft.getHeading());
 			double angleDifference = Pathfinder.boundHalfDegrees(desiredHeading-theta);
+						
+			
 			double turn = turningConstant*angleDifference;
 
-		//	System.out.println(l+" "+r+" with turn value "+turn);
+			System.out.println(l+" "+r+" with turn value "+turn);
 			Robot.drivebase.drive(-l - turn, -r + turn);
 			SmartDashboard.putNumber("L", Robot.drivebase.getLeftEncoder());
 			SmartDashboard.putNumber("R", Robot.drivebase.getRightEncoder());

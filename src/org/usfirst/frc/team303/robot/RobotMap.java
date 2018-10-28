@@ -20,6 +20,7 @@ public class RobotMap {
 	public static final int CLIMBER_WINCH_ID = 4;
 	public static final boolean CLIMBER_WINCH_INV = false;
 	public static final int CLIMBER_HOOK_DEPLOY_SOLENOID_ID = 1;
+	public static final int BUDDY_DEPLOY_SOLENOID_ID = 3;
 	
 	public static final int LIFT_ID = 2;
 	public static final boolean LIFT_INV = true;

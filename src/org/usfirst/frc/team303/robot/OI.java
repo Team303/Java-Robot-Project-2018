@@ -20,6 +20,7 @@ public class OI {
 	
 	static int xPov = 0;
 	static int lPov = 0;
+	static int rPov = 0;
 	
 	static boolean[] lBtn = new boolean[9];
 	static boolean[] rBtn = new boolean[9];	
@@ -31,6 +32,7 @@ public class OI {
 			rBtn[i] = right.getRawButton(i);
 		}
 		lPov = left.getPOV();
+		rPov = right.getPOV();
 		updateXboxValues();
 	}
 	

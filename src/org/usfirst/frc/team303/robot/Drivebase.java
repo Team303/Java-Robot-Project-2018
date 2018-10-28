@@ -50,7 +50,7 @@ public class Drivebase {
 	}
 
 	public int getRightEncoder() {
-		return -rightFront.getSelectedSensorPosition(0); //this is negative for practice bot
+		return rightFront.getSelectedSensorPosition(0); //this is negative for practice bot
 	}
 
 }

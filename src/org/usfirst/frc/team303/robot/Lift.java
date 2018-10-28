@@ -49,6 +49,7 @@ public class Lift {
 			//power = error*0.001;
 			//power -= (getEncoder()-lastEncoder) * kD;
 			
+		
 			//power = Math.pow(error/25000.0, 0.2); //32500
 		} else {
 			//if we are going down, the power can be linear, 
@@ -83,6 +84,7 @@ public class Lift {
 	public int getSetpoint() {
 		return setpoint;
 	}
+	
 
 	public int getEncoder() {
 		return -lift.getSelectedSensorPosition(0);
