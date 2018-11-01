@@ -53,6 +53,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
+	
+		
 		positionChooser.addObject("LEFT", Position.LEFT);
 		positionChooser.addObject("CENTER", Position.CENTER);
 		positionChooser.addObject("RIGHT", Position.RIGHT);
